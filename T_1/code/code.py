@@ -9,6 +9,8 @@ class bc(Enum):
     DIRICHLET = 1
     NEUMANN = 2
 
+
+
 class Point:
     def __init__(self,x ,y):
         self.x = x
@@ -28,6 +30,20 @@ class Node:
 
     def __str__(self):
         return f"Coordinate: {self.point}\nid: {self.id}\nBoundary condition: {self.bc.name}"
+    
+    def up(self, num_nodes_x):
+        return self.id + num_nodes_x
+    
+    def down(self, num_nodes_y):
+        return self.id - num_nodes_y
+    
+    def left(self):
+        return self.id - 1
+    
+    def right(self):
+        return self.id + 1
+    
+
 
 
 #Square domain with lower_bound low and high_bound high.
@@ -47,8 +63,9 @@ class Domain:
         self.num_nodes = self.num_nodes_x * self.num_nodes_y
 
 
+
     def __str__(self):
-        return f"Low point: {self.low}\nHigh point: {self.high}\n h: {self.h}\n Number of points: {len(self.node_list)}"
+        return f"Low point: {self.low}\nHigh point: {self.high}\n h: {self.h}\n Number of points: {self.num_nodes}"
     
     #creates a node list with natural ordering
     def create_node_list(self):
@@ -67,4 +84,3 @@ d = Domain(Point(0.0, -1.0), Point(1.0, 1.0), h)
 d.create_node_list()
 for i in range(d.num_nodes):
     print(d.node_list[i])
-    print(d.num_nodes)
