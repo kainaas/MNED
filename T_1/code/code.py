@@ -2,6 +2,17 @@ import numpy as np
 import matplotlib.pyplot as pyplot
 from enum import Enum
 
+###################################################
+#NOTA 1 Essa implementação talvez tenha ficado grande demais pra esse proble e a implementação do ex_6 na pasta lista_3 esteja mais clean
+#Isso aqui é algo mais geral, mas também mais ilegível. Deixo a vc a escolha do código
+
+#NOTA 2 eu nao tinha visto que tinha uma condição de Robin e eu acho q vai ser um inferno implementar
+
+#NOTA 3 acho melhor apenas modificar valores do ex_6.py
+
+#NOTA 4 eu nao testei essa versão
+##################################################
+
 #epsilon which defines if a point is different from other
 eps= 1e-10
 
@@ -44,7 +55,10 @@ class Node:
         return self.id
     
     def get_bc(self):
-        return self.bc, self.value_bc
+        return self.bc
+    
+    def get_bc_value(self):
+        return self.value_bc
     
     def set_bc(self, bc_type, value):
         self.bc = bc_type
@@ -86,6 +100,9 @@ class Domain:
     def get_node_by_id(self, id):
         return self.node_list[id]
 
+    def get_h(self):
+        return self.h
+
     #creates a node list with natural ordering
     def create_node_list(self):
         k = 0
@@ -109,42 +126,112 @@ class Domain:
                     
 
 
-class Stencil:
-    c_id = -1 #center
-    t_id = -1 #top
-    b_id = -1 #bottom
-    l_id = -1 #left
-    r_id = -1 #right
+class Stencil: #Specific for this problem
+    ids = -1*np.ones(5) #by order: center, top, bottom, left, right
+    weights_general = np.zeros(5) #weights of interior points (should not change)
+    weights = np.zeros(5) #changes if the node is bc or interior
+    rhs = 0.0
     def __init__(self, domain):
         self.domain = domain
+        self.h = self.domain.get_h()
         
     def center_node(self, center_id):
-        self.c_id = center_id
+        self.ids[0] = center_id
+
+
+    def set_weight_center(self, w):
+        self.weights_general[0] = w
+
+    def set_weight_top(self, w):
+        self.weights_general[1] = w
+
+    def set_weight_bottom(self, w):
+        self.weights_general[2] = w
+
+    def set_weight_left(self, w):
+        self.weights_general[3] = w
+
+    def set_weight_right(self, w):
+        self.weights_general[4] = w
 
 
     #should only be called when there is already a center point
     def assemble_stencil(self):
-        c_node = self.domain.get_node_by_id(self.c_id)
-        bc_type, _ = c_node.get_bc()
+        c_node = self.domain.get_node_by_id(self.ids[0])
+        bc_type = c_node.get_bc()
+        bc_value = c_node.get_bc_value()
+        
         if bc_type == bc.DIRICHLET:
-            return
-        else:
+            self.rhs = bc_value
+            self.weights[0] = 1
+
+        elif bc_type == bc.NONE:
             nodes_x = self.domain.get_num_nodes_x()
-            if self.c_id - nodes_x > 0:
-                self.b_id = self.c_id - nodes_x()
-            if self.c_id + nodes_x < self.domain.get_num_nodes():
-                self.t_id = self.c_id + nodes_x
-            if (self.c_id + 1)%nodes_x != 0:
-                self.r_id = self.c_id + 1
-            if (self.c_id + 1)%nodes_x != 1:
-                self.l_id = self.c_id - 1
+
+            if self.ids[0] + nodes_x < nodes_x: #defines the top id
+                self.ids[1] = self.ids[0] + nodes_x
+                if self.ids[1] == bc.DIRICHLET:
+                    self.rhs -= self.weights_general[1] * self.ids[1].get_bc_value()
+                else:
+                    self.weights[1]  = self.weights_general[1]
+            
+            if self.ids[0] - nodes_x > 0: #defines the bottom id
+                self.ids[2] = self.ids[0] - nodes_x()
+                if self.ids[2] == bc.DIRICHLET:
+                    self.rhs -= self.weights_general[2] * self.ids[2].get_bc_value()
+                else:
+                    self.weights[2]  = self.weights_general[2]
+            
+            if (self.c_id + 1)%nodes_x != 1: #defines the left id
+                self.ids[3] = self.ids[0] - 1
+                if self.ids[3] == bc.DIRICHLET:
+                    self.rhs -= self.weights_general[3] * self.ids[3].get_bc_value()
+                else:
+                    self.weights[3]  = self.weights_general[3]
+
+            if (self.c_id + 1)%nodes_x != 0: #defines the right id
+                self.ids[4] = self.ids[0] + 1
+                if self.ids[4] == bc.DIRICHLET:
+                    self.rhs -= self.weights_general[4] * self.ids[1].get_bc_value()
+                else:
+                    self.weights[4]  = self.weights_general[4]
+
+        else: #TODO Neumann conditions
+            a = 1#complete here
+
+        return self.ids, self.weights, self.rhs 
 
     def reset_stencil(self):
-        self.c_id = -1 #center
-        self.t_id = -1 #top
-        self.b_id = -1 #bottom
-        self.l_id = -1 #left
-        self.r_id = -1 #right
+        self.ids = -1*np.ones(5)
+        self.weights = np.zeros(5)
+        self.rhs = 0.0
+
+
+
+
+class System:
+    def __init__(self, domain, stencil, rhs_func):
+        self.domain = domain
+        self.stn = stencil
+        num_nodes = self.domain.get_num_nodes()
+        self.A = np.zeros((num_nodes, num_nodes))
+        self.b = np.array([rhs_func(domain.list_nodes[i].point) for i in range(domain.get_num_nodes())]) #TODO encapsular isso?
+
+    def assemble(self): #TODO: talvez implementar isso com produto de kronecker e remodelar toda a logica seja uma opcao
+        self.stn.reset()
+        for i, it in enumerate(self.domain.node_list):
+            self.stn.center_node(i)
+            ids, weights, rhs = self.stn.assemble_stencil()
+            for j in range(5):
+                if ids[j] != -1:
+                    self.A[i, j] = weights[j]
+            self.b[i] = rhs
+
+        
+                
+
+
+
 
 
 h = 0.1
