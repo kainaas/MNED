@@ -21,6 +21,7 @@ class bc(Enum):
     NONE = 0
     DIRICHLET = 1
     NEUMANN = 2
+    ROBIN = 3
 
 
 
@@ -34,7 +35,7 @@ class Point:
     
         
 
-
+#Defines the class of a node in the domain. A node has a point, an id and a boundary condition
 class Node:
     value_bc = 0.0
     def __init__(self, x, y, id, bc):
@@ -75,6 +76,7 @@ class Domain:
     num_nodes_y = 0
     num_nodes = 0
 
+    #Initializes the domain
     def __init__(self, low, high, h):
         self.low = low
         self.high = high
@@ -196,8 +198,9 @@ class Stencil: #Specific for this problem
                 else:
                     self.weights[4]  = self.weights_general[4]
 
-        else: #TODO Neumann conditions
-            a = 1#complete here
+        else:
+            
+
 
         return self.ids, self.weights, self.rhs 
 

@@ -25,34 +25,41 @@ Docente: Fabrício Simeoni de Sousa\\[.2cm]
     \begin{align}
         &\frac{\partial^2 u}{\partial x^2}(x,y) + 3\frac{\partial^2 u}{\partial y^2}(x,y) = (4\pi^2-3)\frac{\partial u}{\partial y}(x,y),& (x,y) \in [0,1] \times [-1,1] \label{eq}\\
         &u(0,y)=u(1,y)=0,& y \in [-1,1] \label{dirichlet}\\
-        &\frac{\partial u}{\partial \mathbf{n}}(x,-1) = e \sin(2\pi x),\ \frac{\partial u }{\partial \mathbf{n}}(x,1) + u(x,1) = 0,& x \in [0,1] \label{neumman}
+        &\frac{\partial u}{\partial \mathbf{n}}(x,-1) = e \sin(2\pi x),\ \frac{\partial u }{\partial \mathbf{n}}(x,1) + u(x,1) = 0,& x \in [0,1] \label{neumann}
     \end{align}
 
-    Em \ref{neumman} temos
+    Em \ref{neumann} temos
     \[\mathbf{n}(x,y) = \begin{pmatrix}0 \\ y\end{pmatrix},\ (x,y) \in [0,1] \times \{-1,1\}\]
     logo
     \[\frac{\partial u}{\partial \mathbf{n}}(x,-1) = e \sin(2\pi x) \iff
-    \begin{pmatrix}\frac{\partial^2 u}{\partial x^2}(x,-1) & \frac{\partial^2 u}{\partial y^2}(x,-1)\end{pmatrix} \begin{pmatrix}0 \\ -1\end{pmatrix} = e \sin(2\pi x)\]
-    \[\iff -\frac{\partial^2 u}{\partial y^2}(x,-1) = e \sin(2\pi x)\]
+    \begin{pmatrix}\frac{\partial u}{\partial x}(x,-1) & \frac{\partial u}{\partial y}(x,-1)\end{pmatrix} \begin{pmatrix}0 \\ -1\end{pmatrix} = e \sin(2\pi x)\]
+    \[\iff -\frac{\partial u}{\partial y}(x,-1) = e \sin(2\pi x)\]
     e
     \[\frac{\partial u }{\partial \mathbf{n}}(x,1) + u(x,1) = 0 \iff
-    \begin{pmatrix}\frac{\partial^2 u}{\partial x^2}(x,1) & \frac{\partial^2 u}{\partial y^2}(x,1)\end{pmatrix} \begin{pmatrix}0 \\ 1\end{pmatrix} + u(x,1) = 0\]
-    \[\iff \frac{\partial^2 u}{\partial y^2}(x,1) + u(x,1) = 0\]
+    \begin{pmatrix}\frac{\partial u}{\partial x}(x,1) & \frac{\partial u}{\partial y}(x,1)\end{pmatrix} \begin{pmatrix}0 \\ 1\end{pmatrix} + u(x,1) = 0\]
+    \[\iff \frac{\partial u}{\partial y}(x,1) + u(x,1) = 0\]
 
-    Portanto, \ref{neumman} pode ser reescrito como
+    Portanto, \ref{neumann} pode ser reescrito como
     \begin{align}
-        &-\frac{\partial^2 u}{\partial y^2}(x,-1) = e \sin(2\pi x),\ \frac{\partial^2 u}{\partial y^2}(x,1) + u(x,1) = 0,& x \in [0,1] \label{neumman_remake}
+        &-\frac{\partial u}{\partial y}(x,-1) = e \sin(2\pi x),\ \frac{\partial u}{\partial y}(x,1) + u(x,1) = 0,& x \in [0,1] \label{neumann_remake}
     \end{align}
 
     \section{Discretização}
     Usamos os métodos de diferenças finitas centrados para primeira e segunda derivadas, que são $\mathcal{O}(h^2)$
     \[u'(x_n) \approx Du(x_n) = \frac{u(x_{n+1})-u(x_{n-1})}{2h}\]
     \[u''(x_n) \approx D^2u(x_n) = \frac{u(x_{n-1})-2u(x_n)+u(x_{n+1})}{h^2}\]
-    Definimos $x_i = ih$ e $y_j = -1 + jh$, com $i \in \{0,1,\cdots,n+1\}$ e $j \in \{0,1,\cdots,m+1\}$, onde $h = \frac{1}{n+1} = \frac{2}{m+1}$. Então o problema se transforma em
+    Definimos $x_i = ih$ e $y_j = -1 + jh$, com $i \in \{0,1,\cdots,n+1\}$ e $j \in \{0,1,\cdots,m+1\}$, onde $h = \frac{1}{n+1} = \frac{2}{m+1}$. Então o problema se transforma em:
         \begin{align}
         &\frac{U_{i-1,j}-2U_{i,j}+U_{i+1,j}}{h^2} + 3\left(\frac{U_{i,j-1}-2U_{i,j}+U_{i,j+1}}{h^2}\right) = (4\pi^2-3)\frac{U_{i,j+1}-U_{i,j-1}}{2h} \label{num_eq}\\
         &{\color{red}U_{0,j}} = {\color{red}U_{n+1,j}} = 0 \label{num_dirichlet}\\
-        &-3\left(\frac{U_{i,-1}-2U_{i,0}+U_{i,1}}{h^2}\right) = e \sin(2\pi x_i),\ \frac{U_{i,m}-2U_{i,m+1}+U_{i,m+2}}{h^2} + U_{i,m+1} = 0 \label{num_neumman}
+        &-\left(\frac{U_{i,1}-U_{i,-1}}{2h}\right) = e \sin(2\pi x_i),\ \frac{U_{i,m+2}-U_{i,m}}{2h} + U_{i,m+1} = 0 \label{num_neumann}
+    \end{align}
+
+    Para as condições \ref{num_neumann}, definimos uma série de pontos fantasma $U_{i,-1}$ e $U_{i,m+2}$. Isolando-os, podemos encontrar seus valores em função de pontos da malha e então acrescentar no estêncil do ponto central. Dessa forma, os pontos com condição de Neumann ou Robin são tratados como pontos do interior do domínio, exceto com relação aos pesos atribuídos no estêncil. Assim, simplificamos as expressões acima:
+    \begin{align}
+        &\frac{1}{h^2}(U_{i-1,j} + U_{i+1,j} - 8 U_{i,j}) + \left(\frac{3}{h^2} + \frac{4\pi^2 -3}{2h}\right)U_{i,j-1} + \left(\frac{3}{h^2} - \frac{4\pi^2 -3}{2h}\right) U_{i,j+1} = 0\label{simp_eq} \\
+        &{\color{red}U_{0,j}} = {\color{red}U_{n+1,j}} = 0 \label{simp_dirichlet}\\
+        &U_{i, -1} = U_{i, 1} + 2he\sin(2\pi x_i), U_{i,m+2} = U_{i,m} - 2h U_{i,m+1} \label{simp_neumann}
     \end{align}
 
     As temperaturas de interesse estão no interior e fronteiras verticais (devido à condição de contorno de Neumann), que são definidas na ordem
