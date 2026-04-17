@@ -7,7 +7,7 @@ import matplotlib.pyplot as plt
 import math
 
 
-h = 1/10
+h = 1/50
 
 def u_analitica(x,y):
     return np.exp(-y)*np.sin(2*np.pi*x)
@@ -55,14 +55,14 @@ peso_esq = 1/(h**2)
 for i in range(n_pontos): #TODO: fazer isso com produto de kronecker
     #Toma o ponto acima do ponto que estamos e coloca-o na linha correspondente da matriz
     if i+n_pontos_x < n_pontos:
-        A[i, i+n_pontos_x] = peso_cima
+        A[i, i+n_pontos_x] += peso_cima
     else:
         A[i,i] -= 2*h*peso_cima
         A[i, i-n_pontos_x] += peso_cima
 
     #Ponto abaixo
     if i-n_pontos_x >= 0:
-        A[i, i-n_pontos_x] = peso_baixo
+        A[i, i-n_pontos_x] += peso_baixo
     else:
         x_i = x_0 + h * (i % n_pontos_x + 1)
         F[i] += 2*h*peso_baixo*k_baixo(x_i)
@@ -71,15 +71,15 @@ for i in range(n_pontos): #TODO: fazer isso com produto de kronecker
     #Se é um ponto totalmente a direita
     if (i+1)%n_pontos_x == 0:
         F[i] -= u_dir*peso_dir
-        A[i, i-1] = peso_esq
+        A[i, i-1] += peso_esq
     
     #Se é um ponto totalemnte à esquerda
     elif (i+1)%n_pontos_x == 1:
         F[i] -= u_esq*peso_esq
-        A[i, i+1] = peso_dir
+        A[i, i+1] += peso_dir
     else:
-        A[i,i+1] = peso_dir
-        A[i, i-1] = peso_esq
+        A[i,i+1] += peso_dir
+        A[i, i-1] += peso_esq
 
 
 
