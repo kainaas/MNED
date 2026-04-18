@@ -208,7 +208,24 @@ Docente: Fabrício Simeoni de Sousa\\[.2cm]
         0, \text{ caso contrário}
     \end{cases}\]
 
-    Temos $\mathbf{U} = \begin{pmatrix}
+    Porém, podemos simplificar essa decomposição usando produto de Kronecker
+    \[A_{-n} + D_{-1} + D_0 + D_{+1} + B_{+n} = I_{m+2} \otimes T_{n} + I_{n} \otimes T_{m+2}\]
+    onde $I_{m+2}$ é a matriz identidade de dimensões $(m+2) \times (m+2)$, $I_n$ é a identidade $n \times n$ e
+    \[T_n = \begin{pmatrix}
+        -\frac{4}{h^2} & \frac{1}{h^2} & 0 & \cdots & 0 \\[.2cm]
+        \frac{1}{h^2} & -\frac{4}{h^2} & \frac{1}{h^2} & \cdots & 0 \\[.2cm]
+        0 & \frac{1}{h^2} & -\frac{4}{h^2} & \ddots & \vdots \\[.2cm]
+        \vdots & \ddots & \ddots & \ddots & \frac{1}{h^2} \\[.2cm]
+        0 & \cdots & 0 & \frac{1}{h^2} & -\frac{4}{h^2}
+    \end{pmatrix}_{n \times n} \text{ e } T_{m+2} = \begin{pmatrix}
+        -\frac{4}{h^2} & \beta(h) & 0 & \cdots & 0 \\[.2cm]
+        \alpha(h) & -\frac{4}{h^2} & \beta(h) & \cdots & 0 \\[.2cm]
+        0 & \alpha(h) & -\frac{4}{h^2} & \ddots & \vdots \\[.2cm]
+        \vdots & \ddots & \ddots & \ddots & \beta(h) \\[.2cm]
+        0 & \cdots & 0 & \alpha(h) & -\frac{4}{h^2}
+    \end{pmatrix}_{(m+2) \times (m+2)}\]
+
+    Portanto $M = (I_{m+2} \otimes T_{n} + I_{n} \otimes T_{m+2}) + (P_{-n}+Q_{+n}) + G_0$. Temos $\mathbf{U} = \begin{pmatrix}
         U_1\\
         U_2\\
         \vdots\\

@@ -1,20 +1,21 @@
 import numpy as np
 
 h = 0.1
-n = 3 -1
+n = 4 -1
 m = 2*(n+1) -1
 
 N = n*(m+2)
-A = np.zeros((N+2,N+2))
-F = np.zeros((1,N+2))
+A = np.zeros((N,N))
+F = np.zeros((1,N))
 
+np.set_printoptions(linewidth=np.inf)
 
-# Bottom
-k = 1
-for i in range(1,n+1): # n iterations
-    A[k, i-1] = 0 if (i == 1) else 1/h**2
+# Top
+k = 0
+for i in range(0,n): # n iterations
+    if (i != 0): A[k, i-1] = 1/h**2
     A[k, i] = -8/h**2
-    A[k, i+1] = 0 if (i == n) else 1/h**2
+    if (i != n-1): A[k, i+1] = 1/h**2
     A[k, i+n] = 6/h**2
 
     F[0, k] = -(6/h + 4*np.pi**2 - 3)*np.e*np.sin(2*np.pi*i*h)
@@ -23,21 +24,21 @@ for i in range(1,n+1): # n iterations
 
 # Inner
 for j in range(1,m+1):
-    for i in range(1,n+1): # n*m iterations
-        A[k, i-1+n*j] = 0 if (i == 1) else 1/h**2
+    for i in range(0,n): # n*m iterations
+        if (i != 0): A[k, i-1+n*j] = 1/h**2
         A[k, i+n*j] = -8/h**2
-        A[k, i+1+n*j] = 0 if (i == n) else 1/h**2
+        if (i != n-1): A[k, i+1+n*j] = 1/h**2
 
         A[k, i+n*(j-1)] = 3/h**2 + (4*np.pi**2 - 3)/(2*h)
         A[k, i+n*(j+1)] = 3/h**2 - (4*np.pi**2 - 3)/(2*h)
 
         k +=1
 
-# Top
-for i in range(1,n+1): # n iterations
-    A[k, i-1+n*(m+1)] = 0 if (i == 1) else 1/h**2
+# Bottom
+for i in range(0,n): # n iterations
+    if (i != 0): A[k, i-1+n*(m+1)] = 1/h**2
     A[k, i+n*(m+1)] = 4*np.pi**2-3-8/h**2-6/h
-    A[k, i+1+n*(m+1)] = 0 if (i == n) else 1/h**2
+    if (i != n-1): A[k, i+1+n*(m+1)] = 1/h**2
 
     A[k, i+n*m] = 6/h**2
 
@@ -45,56 +46,53 @@ for i in range(1,n+1): # n iterations
 
 ### My method
 
-M = np.zeros((N + 2, N + 2))
+M = np.zeros((N, N))
+In = np.eye(n)
+Im2 = np.eye(m+2)
 
-#D0
-i = np.arange(1, N + 1)
-M[i,i] = -8/h**2
-
-#D-
-i = np.arange(2, N + 1)
-j = i[i % n != 1]
-M[j, j-1] = 1/h**2
-
-#D+
-i = np.arange(1, N)
-j = i[i % n != 0]
-M[j, j+1] = 1/h**2
-
-#A-n
-i = np.arange(n+1, N + 1)
 alpha = 3/h**2 + (4*np.pi**2 - 3)/(2*h)
-M[i, i-n] = alpha
-
-#B+n
-i = np.arange(1, N + 1 - n)
 beta  = 3/h**2 - (4*np.pi**2 - 3)/(2*h)
-M[i, i+n] = beta
+
+# D- + D0 + D+
+Tn = np.zeros((n, n))
+i = np.arange(0, n)
+Tn[i[1:], i[1:]-1] = 1/h**2 #D-
+Tn[i, i] = -4/h**2 #D0/2
+Tn[i[:-1], i[:-1]+1] = 1/h**2 #D+
+
+# A-n + B+n
+Tm2 = np.zeros((m+2, m+2))
+i = np.arange(0, m+2)
+Tm2[i[1:], i[1:]-1] = alpha #A-n
+Tm2[i, i] = -4/h**2 #D0/2
+Tm2[i[:-1], i[:-1]+1] = beta #B+n
+
+M = np.kron(Im2, Tn) + np.kron(Tm2, In)
 
 #P-n
-i = np.arange(n*(m+1)+1, N + 1)
-M[i, i-n] += beta
-
-#Q+n
-i = np.arange(1, n+1)
-M[i, i+n] += alpha
+i = np.arange(0, N)
+j = i[n*(m+1):]
+M[j, j-n] += beta
 
 #G0
-i = np.arange(n*(m+1)+1, N + 1)
-M[i, i] += -2*h*beta
+M[j, j] += -2*h*beta
+
+#Q+n
+j = i[:n]
+M[j, j+n] += alpha
 
 ###
 
 np.savetxt(
     "out.csv",
-    A[1:N+1, 1:N+1],
+    A,
     delimiter=",",
     fmt="%.10e"
 )
 
 np.savetxt(
     "out2.csv",
-    M[1:N+1, 1:N+1],
+    M,
     delimiter=",",
     fmt="%.10e"
 )
