@@ -170,4 +170,52 @@ Docente: Fabrício Simeoni de Sousa\\[.2cm]
         \resizebox{0.95\textwidth}{!}{$\displaystyle \frac{1}{h^2}(U_{i-1+nj} + U_{i+1+nj} - 8 U_{i+nj}) + \left(\frac{3}{h^2} + \frac{4\pi^2 -3}{2h}\right)U_{i+n(j-1)} + \left(\frac{3}{h^2} - \frac{4\pi^2 -3}{2h}\right) U_{i+n(j+1)} = 0$}\\[.5cm]
         \displaystyle \frac{1}{h^2}(U_{i-1+n(m+1)} + U_{i+1+n(m+1)}) + \left(4\pi^2 -3 -\frac{8}{h^2} - \frac{6}{h}\right)U_{i+n(m+1)} + \frac{6}{h^2} U_{i+nm} = 0
     \end{cases}\]
+
+    \subsection{Forma matricial}
+    Defina as funções
+    \[\alpha(h) = \frac{3}{h^2}+\frac{4\pi^2 - 3}{2h},\ \beta(h) = \frac{3}{h^2}-\frac{4\pi^2 - 3}{2h}\]
+    
+    O sistema linear $M \mathbf{U} = \mathbf{F}$ tem $M$ definido por
+    \[M = (A_{-n} + D_{-1} + D_0 + D_{+1} + B_{+n}) + (P_{-n}+Q_{+n}) + G_0\]
+    onde
+    \[(A_{-n})_{i,j} = \begin{cases}
+        \displaystyle \alpha(h), \text{ se $j = i-n$}\\[.2cm]
+        0, \text{ caso contrário}
+    \end{cases}, (B_{+n})_{i,j} = \begin{cases}
+        \displaystyle \beta(h), \text{ se $j = i+n$}\\[.2cm]
+        0, \text{ caso contrário}
+    \end{cases}\]
+    \[(D_{-1})_{i,j} = \begin{cases}
+        \displaystyle \frac{1}{h^2}, \text{ se $i\ (\operatorname{mod}\ n) \neq 1$ e $j = i-1$}\\[.2cm]
+        0, \text{ caso contrário}
+    \end{cases}, (D_{+1})_{i,j} = \begin{cases}
+        \displaystyle \frac{1}{h^2}, \text{ se $i\ (\operatorname{mod}\ n) \neq 0$ e $j = i+1$}\\[.2cm]
+        0, \text{ caso contrário}
+    \end{cases}\]
+    \[(D_{0})_{i,j} = \begin{cases}
+        \displaystyle -\frac{8}{h^2}, \text{ se $j = i$}\\[.2cm]
+        0, \text{ caso contrário}
+    \end{cases}\]
+    \[(P_{-n})_{i,j} = \begin{cases}
+        \displaystyle \beta(h), \text{ se $j = i-n$ e $i > n(m+1)$}\\[.2cm]
+        0, \text{ caso contrário}
+    \end{cases}, (Q_{+n})_{i,j} = \begin{cases}
+        \displaystyle \alpha(h), \text{ se $j = i+n$ e $i \leq n$}\\[.2cm]
+        0, \text{ caso contrário}
+    \end{cases}\]
+    \[(G_0)_{i,j} = \begin{cases}
+        \displaystyle -2h\beta(h), \text{ se $i > n(m+1)$}\\[.2cm]
+        0, \text{ caso contrário}
+    \end{cases}\]
+
+    Temos $\mathbf{U} = \begin{pmatrix}
+        U_1\\
+        U_2\\
+        \vdots\\
+        U_{n(m+2)}
+    \end{pmatrix}$ como nosso vetor de incógnitas e $\mathbf{F}$ definido por
+    \[(F)_{i} = \begin{cases}
+        \displaystyle -\left(\frac{6}{h} + 4\pi^2 -3\right)e\sin(2\pi ih), \text{ se $i \leq n$}\\[.2cm]
+        0, \text{ caso contrário}
+    \end{cases}\]
 \end{document}
