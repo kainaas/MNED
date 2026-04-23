@@ -3,6 +3,9 @@ import matplotlib.pyplot as plt
 import os
 import pickle
 
+save_figs = False
+refresh_pickles = False
+
 path = os.path.join("..", "images")
 
 
@@ -14,6 +17,9 @@ h_values = [1/10, 1/25, 1/50, 1/75, 1/100]
 
 #error vector (one entry for each h in h_value). Will be considered the infinity norm
 erro = np.zeros(len(h_values))
+
+#error vector in 1-norm for grid functions
+erro_n1 = np.zeros(len(h_values))
 
 #u_xx + 3u_yy -cu_y = 0
 c = 4* np.pi**2 -3
@@ -49,11 +55,12 @@ for l, h in enumerate(h_values):
     #Files where the plots are going to be saved
     plot_calculado = os.path.join(path, f"plot_calculado_h={h:.3f}.pdf")
     plot_analitico = os.path.join(path, f"plot_analitico_h={h:.3f}.pdf")
+    plot_dif = os.path.join(path, f"plot_dif_h={h:.3f}.pdf")
 
 
-    #########
+    #===================
     #Creating the system
-    #########
+    #===================
     F = np.zeros(N).T
 
     M = np.zeros((N, N))
@@ -113,23 +120,36 @@ for l, h in enumerate(h_values):
 
     dif = np.abs(U_analitico - U_plot)
     erro[l] = np.max(dif)
+    erro_n1[l] = dif.sum().sum()*h**2
 
-    fig_calculado = plt.figure()
-    ax = fig_calculado.add_subplot(111, projection='3d')
-    ax.plot_surface(xx,yy,U_plot)
-    fig_calculado.savefig(plot_calculado)
+    print(f"Erro na norma infinito: {float(erro[l])}")
+    print(f"Erro na norma 1: {float(erro_n1[l])}")
 
-    fig_analitico = plt.figure()
-    ax2 = fig_analitico.add_subplot(111, projection='3d')
-    ax2.plot_surface(xx,yy,U_analitico)
-    fig_analitico.savefig(plot_analitico)
-    #plt.show()
+    if save_figs:
+        fig_calculado = plt.figure()
+        ax = fig_calculado.add_subplot(111, projection='3d')
+        ax.plot_surface(xx,yy,U_plot)
+        fig_calculado.savefig(plot_calculado)
+
+        fig_analitico = plt.figure()
+        ax2 = fig_analitico.add_subplot(111, projection='3d')
+        ax2.plot_surface(xx,yy,U_analitico)
+        fig_analitico.savefig(plot_analitico)
+        #plt.show()
+
+        fig_dif = plt.figure()
+        ax3 = fig_dif.add_subplot(111)
+        c = ax3.pcolormesh(xx, yy, dif, cmap='inferno', shading='auto')  #creates colormap
+        fig_dif.colorbar(c, ax=ax3)    # pass the mappable
+        fig_dif.savefig(plot_dif)
+
     print("done")
 
 
-#exports erro and h_values to a pickle file. Makes life easier to plot the loglog
-with open('erro.pickle', 'wb') as f:
-    pickle.dump(erro,f)
+if refresh_pickles:
+    #exports erro and h_values to a pickle file. Makes life easier to plot the loglog
+    with open('erro.pickle', 'wb') as f:
+        pickle.dump(erro,f)
 
-with open('h.pickle', 'wb') as f:
-    pickle.dump(h_values, f)
+    with open('h.pickle', 'wb') as f:
+        pickle.dump(h_values, f)

@@ -13,15 +13,16 @@ with open('erro.pickle', 'rb') as f:
 with open('h.pickle', 'rb') as f:
     h_values = pickle.load(f)
 
-x= np.array([5e-2, 8e-2])
-y = x**2
+x= np.array([3e-2, 4e-2])
+y = 10*x**2
 
 
 
 fig_loglog = plt.figure()
 ax = fig_loglog.add_subplot(111)
 ax.loglog(np.array(h_values), erro, color='red', marker='v', label='erro calculado')
-ax.loglog(x,y, color='black', ls='--', label=r'$h^2$')
+ax.loglog(x,y, color='black', ls='--', label=r'$O(h^2)$')
+ax.grid(visible=True,which='minor')
 ax.set_title("Plot log-log do erro na norma infinito")
 ax.set_xlabel("h")
 ax.set_ylabel("Erro na norma infinito")

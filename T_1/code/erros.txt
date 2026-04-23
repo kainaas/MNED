@@ -1,0 +1,20 @@
+h = 0.1
+Erro na norma infinito: 0.0801890736329871
+Erro na norma 1: 0.0815098657477569
+done
+h = 0.04
+Erro na norma infinito: 0.013254737784694992
+Erro na norma 1: 0.012823351119130785
+done
+h = 0.02
+Erro na norma infinito: 0.0033059021363888164
+Erro na norma 1: 0.0031658218165465987
+done
+h = 0.013333333333333334
+Erro na norma infinito: 0.0014712692349783119
+Erro na norma 1: 0.0014033834775003303
+done
+h = 0.01
+Erro na norma infinito: 0.0008276418655510653
+Erro na norma 1: 0.0007878351860434281
+done
