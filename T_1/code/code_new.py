@@ -3,7 +3,7 @@ import matplotlib.pyplot as plt
 import os
 import pickle
 
-save_figs = False
+save_figs = True
 refresh_pickles = False
 
 path = os.path.join("..", "images")
@@ -46,16 +46,18 @@ f = lambda x,y: 0
 for l, h in enumerate(h_values):
     print(f"h = {h}")
     n = int((x_n - x_0)/h) - 1 #discard the point on Dirichlet BC (right and left)
-    m = int((y_n - y_0)/h) + 1 
+    m = int((y_n - y_0)/h) - 1
 
     N = n*(m+2)
 
     
 
     #Files where the plots are going to be saved
-    plot_calculado = os.path.join(path, f"plot_calculado_h={h:.3f}.pdf")
-    plot_analitico = os.path.join(path, f"plot_analitico_h={h:.3f}.pdf")
-    plot_dif = os.path.join(path, f"plot_dif_h={h:.3f}.pdf")
+    calculado2D = os.path.join(path, f"calculado2D/h={h:.3f}.pdf")
+    calculado3D = os.path.join(path, f"calculado3D/h={h:.3f}.pdf")
+    analitico2D = os.path.join(path, f"analitico2D/h={h:.3f}.pdf")
+    analitico3D = os.path.join(path, f"analitico3D/h={h:.3f}.pdf")
+    plot_dif = os.path.join(path, f"dif/h={h:.3f}.pdf")
 
 
     #===================
@@ -105,17 +107,17 @@ for l, h in enumerate(h_values):
 
 
     X = np.linspace(x_0, x_n, n+2)
-    Y = np. linspace(y_0, y_n, m)
+    Y = np. linspace(y_0, y_n, m+2)
     xx, yy = np.meshgrid(X, Y)
 
     U_analitico = u_analitica(xx, yy)
 
-    U_matriz = np.array([U[i:i+n] for i in [k*n for k in range(m)]])
+    U_matriz = np.array([U[i:i+n] for i in [k*n for k in range(m+2)]])
 
-    U_plot = np.zeros((m, n+2))
-    U_plot[:,0] = np.array([u_esq for i in range(m)])
+    U_plot = np.zeros((m+2, n+2))
+    U_plot[:,0] = np.array([u_esq for i in range(m+2)])
     U_plot[:,1:-1] = U_matriz
-    U_plot[:,-1] = np.array([u_dir for i in range(m)])
+    U_plot[:,-1] = np.array([u_dir for i in range(m+2)])
 
 
     dif = np.abs(U_analitico - U_plot)
@@ -127,21 +129,33 @@ for l, h in enumerate(h_values):
 
     if save_figs:
         fig_calculado = plt.figure()
+        ax = fig_calculado.add_subplot(111)
+        plt.colorbar(ax.contourf(xx,yy,U_plot,levels=100,cmap='coolwarm'),label=r'$U_{i,j}$')
+        fig_calculado.savefig(calculado2D)
+
+        fig_analitico = plt.figure()
+        ax2 = fig_analitico.add_subplot(111)
+        plt.colorbar(ax2.contourf(xx,yy,U_analitico,levels=100,cmap='coolwarm'),label=r'$u(x_i,y_j)$')
+        fig_analitico.savefig(analitico2D)
+
+        fig_calculado = plt.figure()
         ax = fig_calculado.add_subplot(111, projection='3d')
-        ax.plot_surface(xx,yy,U_plot)
-        fig_calculado.savefig(plot_calculado)
+        plt.colorbar(ax.plot_surface(xx,yy,U_plot,cmap='coolwarm'),label=r'$U_{i,j}$')
+        fig_calculado.savefig(calculado3D)
 
         fig_analitico = plt.figure()
         ax2 = fig_analitico.add_subplot(111, projection='3d')
-        ax2.plot_surface(xx,yy,U_analitico)
-        fig_analitico.savefig(plot_analitico)
-        #plt.show()
+        plt.colorbar(ax2.plot_surface(xx,yy,U_analitico,cmap='coolwarm'),label=r'$u(x_i,y_j)$')
+        fig_analitico.savefig(analitico3D)
 
         fig_dif = plt.figure()
         ax3 = fig_dif.add_subplot(111)
         c = ax3.pcolormesh(xx, yy, dif, cmap='inferno', shading='auto')  #creates colormap
         fig_dif.colorbar(c, ax=ax3)    # pass the mappable
         fig_dif.savefig(plot_dif)
+
+        plt.close('all')
+        #plt.show()
 
     print("done")
 
