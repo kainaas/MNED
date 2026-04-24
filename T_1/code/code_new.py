@@ -3,7 +3,7 @@ import matplotlib.pyplot as plt
 import os
 import pickle
 
-save_figs = True
+save_figs = False
 refresh_pickles = False
 
 path = os.path.join("..", "images")
@@ -20,9 +20,6 @@ erro = np.zeros(len(h_values))
 
 #error vector in 1-norm for grid functions
 erro_n1 = np.zeros(len(h_values))
-
-#u_xx + 3u_yy -cu_y = 0
-c = 4* np.pi**2 -3
 
 #Values of the rectangle that defines the domain
 x_0 = 0
@@ -72,7 +69,7 @@ for l, h in enumerate(h_values):
     alpha = 3/h**2 + (4*np.pi**2 - 3)/(2*h)
     beta  = 3/h**2 - (4*np.pi**2 - 3)/(2*h)
 
-    F[0:n] = np.array([-(6/h + 4*np.pi**2 - 3)*np.e*np.sin(2*np.pi*i*h) for i in range(1,n+1)])
+    F[0:n] = np.array([-2*h*alpha * np.e*np.sin(2*np.pi*i*h) for i in range(1,n+1)])
 
     # D- + D0 + D+
     Tn = np.zeros((n, n))

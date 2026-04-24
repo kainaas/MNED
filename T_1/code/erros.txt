@@ -4,7 +4,7 @@ Erro na norma 1: 0.08146886312010279
 done
 h = 0.04
 Erro na norma infinito: 0.013254737784692772
-Erro na norma 1: 0.012818302018483926
+Erro na norma 1: 0.012818302018483869
 done
 h = 0.02
 Erro na norma infinito: 0.003305902136387928
