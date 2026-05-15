@@ -1,5 +1,4 @@
 import numpy as np
-import matplotlib.pyplot as plt
 from math import floor
 
 EPS = 10**-7 #Epsilon pro método de Newton
@@ -10,7 +9,6 @@ class Resultado:
         self.qnt_passos = qnt_passos #Quantidade de passos executada
         self.h = h #Passo de t
         self.u = u #Vetor com a solução
-        self.size_u = len(u) #Tamanho do vetor de solução
         self.t = t #Vetor com os valores do tempo utilizados. Note que  t_final <= t[-1] < t_final + h
 
 
@@ -49,7 +47,7 @@ def RK4(t0, t_final, h, u0: np.array, f):
     u, t = inicializa_metodo(qnt_passos, t0, u0)
 
     for i in range(1,qnt_passos):
-        t[i] = t[i] = t[i-1] + h
+        t[i] = t[i-1] + h
         K1 = f(u[:, i-1], t[i-1])
         K2 = f(u[:, i-1] + (h/2)*K1, t[i-1] + h/2)
         K3 = f(u[:, i-1] + (h/2)*K2, t[i-1] + h/2)
@@ -78,7 +76,6 @@ def euler_implicito(t0, t_final, h, u0: np.array, f, Jf): #Jf é a matriz da der
             delta = np.linalg.solve(JG, -G)
 
             u_it += delta
-            print(delta)
             if np.linalg.norm(delta) < EPS:
                 u[:,i] = u_it
                 break
