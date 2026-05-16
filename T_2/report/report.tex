@@ -1,0 +1,96 @@
+\documentclass{article}
+\usepackage[portuguese]{babel}
+\usepackage[left=3cm,top=3cm,right=2cm,bottom=2cm]{geometry}
+\usepackage{amssymb}
+\usepackage{amsmath}
+
+\title{(Universidade de São Paulo)\\
+Pêndulo Simples e Pêndulo Duplo}
+
+\author{Métodos Numéricos em Equações Diferenciais\\
+Docente: Fabrício Simeoni de Sousa\\[.2cm]
+\begin{tabular}{r@{\ }c@{\ }l}
+    Kainã Alves Tureso      &-- &15466391\\
+    Vinícius de Sá Ferreira &-- &15491650
+\end{tabular}}
+
+\date{\today}
+
+\renewcommand{\arraystretch}{1.3}
+\begin{document}
+    \maketitle
+
+    \section{Pêndulo Simples}
+    \subsection{EDO}
+    \[\mathbf{u}(t) = \begin{pmatrix}
+        u_1(t)\\
+        u_2(t)
+    \end{pmatrix} = \begin{pmatrix}
+        q(t)\\
+        q'(t)
+    \end{pmatrix} = \begin{pmatrix}
+        q(t)\\
+        p(t)
+    \end{pmatrix},\quad q''(t) + \sin(q(t)) = 0 \iff p'(t) = -\sin(q(t))\]
+    \[\mathbf{u}'(t) = \begin{pmatrix}
+        q'(t)\\
+        p'(t)
+    \end{pmatrix} = \begin{pmatrix}
+        p(t)\\
+        -\sin(q(t))
+    \end{pmatrix} = \begin{pmatrix}
+        u_2(t)\\
+        -\sin(u_1(t))
+    \end{pmatrix} = \begin{pmatrix}
+        f_1(\mathbf{u}(t), t)\\
+        f_2(\mathbf{u}(t), t)
+    \end{pmatrix} = \mathbf{f}(\mathbf{u}(t), t)\]
+
+    \[\mathbf{u}^0 = \mathbf{u}(0) = \begin{pmatrix}
+        q(0)\\
+        p(0)
+    \end{pmatrix} = \begin{pmatrix}
+        \frac{\pi}{4}\\
+        0
+    \end{pmatrix}\]
+
+    \subsection{Métodos}
+    Para $h > 0$, $t_n = hn$, $\mathbf{U}^n = \begin{pmatrix}
+        U_1^n\\
+        U_2^n
+    \end{pmatrix} \approx \mathbf{u}(t_n)$ e $\mathbf{f}^n = \mathbf{f}(\mathbf{U}^n,t_n)$ temos:
+    \begin{enumerate}
+        \item Euler explícito: $\mathbf{U}^{n+1} = \mathbf{U}^n + h\mathbf{f}^n$;
+        \item RK4: $\begin{cases}
+            K_1 = \mathbf{f}(\mathbf{U}^n,t_n)\\
+            K_2 = \mathbf{f}(\mathbf{U}^n+\frac{h}{2}K_1,t_n+\frac{h}{2})\\
+            K_3 = \mathbf{f}(\mathbf{U}^n+\frac{h}{2}K_2,t_n+\frac{h}{2})\\
+            K_4 = \mathbf{f}(\mathbf{U}^n+hK_3,t_n+h)\\
+            \mathbf{U}^{n+1} = \mathbf{U}^n + \frac{h}{6}(K_1 + 2K_2 + 2K_3 + K_4)
+        \end{cases}$;
+        \item Euler implícito: $\mathbf{U}^{n+1} = \mathbf{U}^n + h\mathbf{f}^{n+1}$
+    \end{enumerate}
+
+    \subsubsection{Euler implícito}
+    \[\mathbf{U}^{n+1} = \mathbf{U}^n + h\mathbf{f}^{n+1} \iff \mathbf{F}(\mathbf{U}) = \mathbf{U} - \mathbf{U}^n - h\mathbf{f}(\mathbf{U},t_n) = 0\]
+    \[\mathbf{F}'(\mathbf{U}) = \frac{d\mathbf{F}}{d\mathbf{U}}(\mathbf{U}) = I_n - h\frac{d\mathbf{f}}{d\mathbf{U}}(\mathbf{U},t_n)\]
+    onde $I_n$ é a matriz identidade $n \times n$ e
+    \[\frac{d\mathbf{f}}{d\mathbf{U}}(\mathbf{U},t_n) = \left.\begin{pmatrix}
+        \frac{\partial f_1}{\partial U_1} & \frac{\partial f_1}{\partial U_2}\\
+        \frac{\partial f_2}{\partial U_1} & \frac{\partial f_2}{\partial U_2}\\
+    \end{pmatrix}\right|_{(\mathbf{U},t_n)} = \begin{pmatrix}
+        0 & 1\\
+        -\cos(U_1) & 0\\
+    \end{pmatrix}\]
+    logo
+    \[\mathbf{F}'(\mathbf{U}) = \begin{pmatrix}
+        1 & -h\\
+        h\cos(U_1) & 1\\
+    \end{pmatrix}\]
+
+    Assim, com $\mathbf{U} = \mathbf{U}^{n+1}$ e um chute inicial $\mathbf{U}^{(0)}$, temos o método de Newton, para $k=0,1,\ldots$ e com critério de parada $\|\boldsymbol{\delta}_k\|_2 < 10^{-7}$:
+    \[\begin{cases}
+        \mathbf{F}'(\mathbf{U}^{(k)})\boldsymbol{\delta}_k = - \mathbf{F}(\mathbf{U}^{(k)})\\
+        \mathbf{U}^{(k+1)} = \mathbf{U}^{(k)} + \boldsymbol{\delta}_k
+    \end{cases}\]
+\end{document}
