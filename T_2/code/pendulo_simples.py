@@ -11,8 +11,8 @@ import pickle
 #      =(u2, -sin(u1))
 
 h = 1
-pos_ini = 0.5
-vel_ini = 1.95
+pos_ini = np.pi / 4
+vel_ini = 0
 
 t0 = 0
 t_final = 10
