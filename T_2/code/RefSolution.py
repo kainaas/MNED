@@ -8,8 +8,19 @@ from scipy.special import ellipj
 from scipy.special import ellipk
 import numpy as np
 
+class Resultado:
+    def __init__(self, qnt_passos, h, u, t):
+        self.qnt_passos = qnt_passos #Quantidade de passos executada
+        self.h = h #Passo de t
+        self.u = u #Vetor com a solução
+        self.t = t #Vetor com os valores do tempo utilizados. Note que  t_final <= t[-1] < t_final + h
 
-def RefSolution(q_0, t):
+
+
+
+def RefSolution(t0, t_final, h, q_0):
+    qnt_passos = int((t_final-t0)/h)
+    t = np.linspace(t0, t_final, qnt_passos+1)
 
     # Auxiliary variable  
     k_0 = np.sin(0.5*q_0)  
@@ -25,5 +36,7 @@ def RefSolution(q_0, t):
  
     # Angular velocity  
     p = -2*k_0*cn
+
+    u = np.vstack([q,p])
     
-    return q, p
+    return Resultado(qnt_passos, h, u, t)
