@@ -93,4 +93,56 @@ Docente: Fabrício Simeoni de Sousa\\[.2cm]
         \mathbf{F}'(\mathbf{U}^{(k)})\boldsymbol{\delta}_k = - \mathbf{F}(\mathbf{U}^{(k)})\\
         \mathbf{U}^{(k+1)} = \mathbf{U}^{(k)} + \boldsymbol{\delta}_k
     \end{cases}\]
+
+    \subsection{Gráficos}
+    \subsubsection{Posição angular pelo Tempo}
+    \ldots
+
+    \subsubsection{Ordem de convergência}
+    \ldots
+
+    \subsubsection{Velocidade angular pela Posição angular}
+    \ldots
+
+    % ---- %
+
+    \section{Pêndulo Duplo}
+    \subsection{EDO}
+    \[\mathbf{u}(t) = \begin{pmatrix}
+        u_1(t)\\
+        u_2(t)\\
+        u_3(t)\\
+        u_4(t)\\
+    \end{pmatrix} = \begin{pmatrix}
+        q_1(t)\\
+        q_2(t)\\
+        p_1(t)\\
+        p_2(t)
+    \end{pmatrix}\]
+    \[\mathbf{u}'(t) = \begin{pmatrix}
+        q_1'(t)\\
+        q_2'(t)\\
+        p_1'(t)\\
+        p_2'(t)
+    \end{pmatrix} = \left.\begin{pmatrix}
+        \frac{p_1-p_2\cos(q_1-q_2)}{2-\cos^2(q_1-q_2)}\\
+        \frac{2p_2-p_1\cos(q_1-q_2)}{2-\cos^2(q_1-q_2)}\\
+        -A_1+A_2-2\sin(q_1)\\
+        A_1-A_2-\sin(q_2)
+    \end{pmatrix}\right|_{(t)} = \left.\begin{pmatrix}
+        \frac{u_3-u_4\cos(u_1-u_2)}{2-\cos^2(u_1-u_2)}\\
+        \frac{2u_4-u_3\cos(u_1-u_2)}{2-\cos^2(u_1-u_2)}\\
+        -A_1+A_2-2\sin(u_1)\\
+        A_1-A_2-\sin(u_2)
+    \end{pmatrix}\right|_{(t)} = \mathbf{f}(\mathbf{u}(t),t)\]
+    onde
+    \[A_1(t) = \left.\frac{p_1p_2\sin(q_1-q_2)}{1+\sin^2(q_1-q_2)}\right|_{(t)} = \left.\frac{u_3u_4\sin(u_1-u_2)}{1+\sin^2(u_1-u_2)}\right|_{(t)}\]
+    \[A_2(t) = \left.\frac{[p_1^2+2p_2^2-2p_1p_2\cos(q_1-q_2)]\sin(q_1-q_2)\cos(q_1-q_2)}{[1+\sin^2(q_1-q_2)]^2}\right|_{(t)}\]
+    \[= \left.\frac{[u_3^2+2u_4^2-2u_3u_4\cos(u_1-u_2)]\sin(u_1-u_2)\cos(u_1-u_2)}{[1+\sin^2(u_1-u_2)]^2}\right|_{(t)}\]
+
+    \subsection{Trajetória de um pêndulo}
+    \ldots
+
+    \subsection{Experimentos}
+    \ldots
 \end{document}
