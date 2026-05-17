@@ -11,7 +11,7 @@ import pickle
 #f(u,t)=(q', -sin(q))
 #      =(u2, -sin(u1))
 
-h = 1
+h = 0.1
 pos_ini = np.pi / 4
 vel_ini = 0
 

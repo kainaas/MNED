@@ -2,6 +2,7 @@ import numpy as np
 from math import floor
 
 EPS = 10**-7 #Epsilon pro método de Newton
+MAX_IT = 20 #Número máximo de iterações para Newton
 
 #Classe para retornar o resultado dos métodos
 class Resultado:
@@ -66,7 +67,7 @@ def euler_implicito(t0, t_final, h, u0: np.array, f, Jf): #Jf é a matriz da der
     for i in range(1,qnt_passos):
         t[i] = t[i-1] + h
         u_it = u[:,i-1].copy()
-        while True: #Loop do método de Newton
+        for i in range(MAX_IT): #Loop do método de Newton
              # G(x)
             G = u_it - u[:, i-1] - h*f(u_it, t[i])
 
@@ -79,6 +80,8 @@ def euler_implicito(t0, t_final, h, u0: np.array, f, Jf): #Jf é a matriz da der
             if np.linalg.norm(delta) < EPS:
                 u[:,i] = u_it
                 break
+            if i == MAX_IT - 1:
+                print(delta)
 
     return Resultado(qnt_passos, h, u, t)
     
