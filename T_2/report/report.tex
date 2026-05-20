@@ -133,7 +133,15 @@ Docente: Fabrício Simeoni de Sousa\\[.2cm]
 
     Para o método de Euler implícito, pelo mesmo argumento, $|1+ z_i| > 1$, $\forall i=1,2$. Dessa forma, o método é sempre estável.
 
-    Para o método RK-4, temos $\Re(z_1) = 0$, $i=1,2$. Além disso, $\Im(z_1) = h\Im(\lambda_1) \le h$ e $\Im(z_2) = h\Im(\lambda_2) \ge -h$.
+    Para o método RK-4, verifiquemos a região de estabilidade absoluta para quando $z$ é um número imaginário puro. Defina $z=ia$, $a \in \mathbb{R}$. Substituindo na equação da região de estabilidade:
+    \begin{align}
+        \left|1 + ia - \dfrac{a^2}{2} - \dfrac{ia^3}{6} + \dfrac{a^4}{24}\right| < 1 \notag
+    \end{align}
+    Ignorando a raíz quadrada do módulo pois o RHS é 1, o módulo pode ser reescrito como
+    \begin{align}
+        \left(1-\dfrac{a^2}{2} + \dfrac{a^4}{24}\right)^2 + \left(a - \dfrac{a^3}{6}\right)^2 < 1 \notag
+    \end{align}
+    Resolvendo a inequação, verificamos que $|a| \in (0, 2\sqrt{2})$. Defina $z_j = ia_j$, $j=1,2$. Temos $|a_j| = |h \cdot \Im(\lambda_j)| \le h$. Logo, $|z_j| \le h$. Com isso, para o método ser absolutamente estável, devemos ter $h \in (0, 2\sqrt{2})$. 
  
     \subsection{Gráficos}
     \subsubsection{Posição angular pelo Tempo}
