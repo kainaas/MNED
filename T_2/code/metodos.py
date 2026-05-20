@@ -67,7 +67,7 @@ def euler_implicito(t0, t_final, h, u0: np.array, f, Jf): #Jf é a matriz da der
     for i in range(1,qnt_passos):
         t[i] = t[i-1] + h
         u_it = u[:,i-1].copy()
-        for i in range(MAX_IT): #Loop do método de Newton
+        for j in range(MAX_IT): #Loop do método de Newton
              # G(x)
             G = u_it - u[:, i-1] - h*f(u_it, t[i])
 
@@ -78,14 +78,20 @@ def euler_implicito(t0, t_final, h, u0: np.array, f, Jf): #Jf é a matriz da der
 
             u_it += delta
             if np.linalg.norm(delta) < EPS:
-                u[:,i] = u_it
+                u[:,i] = u_it   
                 break
-            if i == MAX_IT - 1:
+            if j == MAX_IT - 1:
                 print(delta)
 
     return Resultado(qnt_passos, h, u, t)
     
         
+def erro_infinito(analitica: Resultado, calculada: Resultado):
+    return np.max(np.abs(analitica.u-calculada.u),axis=1)
+
+def erro_norma2(analitica: Resultado, calculada: Resultado):
+    #(h * soma(erro ao quadrado))^(1/2) - Definição do LeVeque de erro em funções de malha
+    return np.sqrt(analitica.h * np.sum(np.square(analitica.u - calculada.u),axis=1))
 
 
 if __name__ == "__main__":

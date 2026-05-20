@@ -7,15 +7,7 @@
 from scipy.special import ellipj
 from scipy.special import ellipk
 import numpy as np
-
-class Resultado:
-    def __init__(self, qnt_passos, h, u, t):
-        self.qnt_passos = qnt_passos #Quantidade de passos executada
-        self.h = h #Passo de t
-        self.u = u #Vetor com a solução
-        self.t = t #Vetor com os valores do tempo utilizados. Note que  t_final <= t[-1] < t_final + h
-
-
+from metodos import Resultado
 
 
 def RefSolution(t0, t_final, h, q_0):
