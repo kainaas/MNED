@@ -1,0 +1,85 @@
+\documentclass{article}
+\usepackage[left=3cm,top=3cm,right=2cm,bottom=2cm]{geometry}
+\usepackage{amssymb}
+\usepackage{amsmath}
+\usepackage{cancel}
+\usepackage[hidelinks]{hyperref}
+\usepackage{tikz}
+\usepackage{booktabs}
+\usepackage{float}
+\usepackage{graphicx}
+\usepackage[brazilian]{babel}
+
+\graphicspath{ {../images/} }
+
+
+\title{(Universidade de São Paulo)\\
+Problemas de Valor Inicial}
+
+\author{Métodos Numéricos em Equações Diferenciais\\
+Docente: Fabrício Simeoni de Sousa\\[.2cm]
+\begin{tabular}{r@{\ }c@{\ }l}
+    Kainã Alves Tureso      &-- &15466391\\
+    Vinícius de Sá Ferreira &-- &15491650
+\end{tabular}}
+
+\date{\today}
+
+\begin{document}
+    \maketitle
+
+    \tableofcontents
+
+    \section{Resumo}
+
+    \section{Problema}
+    No presente estudo, buscamos por resolver dois Problemas de Valor Inicial (PVI) com métodos numéricos. O primeiro problema consiste na solução da equação que rege o movimento de um pêndulo simples sem forças dissipativas, dada por
+    \begin{align}
+        \begin{cases}
+            q''(t) + \sin(q(t)) &= 0 \\
+            q(0) = \frac{\pi}{4} & q'(0) = 0
+        \end{cases} \label{eq:pendulo_simples}
+    \end{align}
+
+    em que $q$ é o ângulo entre a haste e a vertical e $t \in [0,30]$
+
+    O segundo problema é o pêndulo duplo sem forças dissipativas, descrito pelas equações
+    \begin{align}
+        \begin{cases}
+            q_1'(t) = \dfrac{p_1 - p_2 \cos(q_1 - q_2)}{2 - \cos^2(q_1 - q_2)} \\
+            q_2'(t) = \dfrac{2p_2 - p_1 \cos(q_1 - q_2)}{2 - \cos^2(q_1 - q_2)} \\
+            p_1'(t) = -A_1 + A_2 - 2\sin(q_1)\\
+            p_2'(t) = A_1 - A_2 - \sin(q_2)
+        \end{cases} \label{eq:pendulo_duplo}
+    \end{align}
+    em que $q_1$ e $q_2$ são os ângulos das hastes do pêndulo conectado ao ponto fixo e o pêndulo conectado à primeira haste com a vertical, respectivamente e $p_1$ e $p_2$ são os momentos dos pêndulos. Além disso, temos
+    \[
+        A_1 = \dfrac{p_1p_2\sin(q_1 - q_2)}{1 + \sin^2(q_1 - q_2)} 
+    \]
+    \[
+        A_2 = \dfrac{[p_1^2 + 2p_2^2 - 2p_1p_2 \cos(q_1 - q_2)] \sin(q_1 - q_2) \cos(q_1 - q_2)}{(1+ \sin^2(q_1 - q_2))^2}
+    \]
+
+    Os valores iniciais a serem utilizados são $q_{1; 0}$, $q_{2;0}$ $\in (0,\pi)$ e $p_{1;0} = p_{2;0} = 0$. Por fim, $t\in[0,60]$
+
+    \section{Discretização}
+    Transformaremos os PVIs \ref{eq:pendulo_simples} e \ref{eq:pendulo_duplo} para a forma vetorizada
+    \begin{align}
+        \mathbf{u}'(t) = \mathbf{f}(\mathbf{u}(t), t) \label{eq:forma_padrao}
+    \end{align}
+    em que $\mathbf{u} = (u_0(t), \dots, u_m(t))$ e $\mathbf{f}(\mathbf{u}(t), t) = (f_0(\mathbf{u}(t),t), \dots, f_m(\mathbf{u}(t),t))$.
+    
+    \subsection{Pêndulo simples}
+    Aplicaremos os métodos de Euler explícito, Euler implícito e Runge-Kutta padrão de 4 estágios para discretizar o problema. Primeiro, reescrevemos o PVI \ref{eq:pendulo_simples} para o formato em \ref{eq:forma_padrao}:
+    \begin{align}
+        \mathbf{u}(t) = \begin{bmatrix}
+            q(t) \\
+            q'(t)
+        \end{bmatrix}; &&
+        \mathbf{f}(\mathbf{u}(t),t) = \begin{bmatrix}
+                q'(t) \\
+                -\sin(q(t))
+        \end{bmatrix} \notag
+    \end{align}
+
+\end{document}
