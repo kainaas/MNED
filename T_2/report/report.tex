@@ -1,9 +1,12 @@
 \documentclass{article}
-\usepackage[portuguese]{babel}
+\usepackage[brazilian]{babel}
 \usepackage[left=3cm,top=3cm,right=2cm,bottom=2cm]{geometry}
 \usepackage{amssymb}
 \usepackage{amsmath}
 \usepackage{indentfirst}
+\usepackage{graphicx}
+\usepackage{float}
+\usepackage{subcaption}
 
 \newcommand{\bd}[1]{\mathbf{#1}} %bold
 \newcommand{\bb}[1]{\bar{\mathbf{#1}}} %bar - bold
@@ -145,13 +148,37 @@ Docente: Fabrício Simeoni de Sousa\\[.2cm]
  
     \subsection{Gráficos}
     \subsubsection{Posição angular pelo Tempo}
-    \ldots
+    \begin{figure}[H]
+        \centering
+        \includegraphics[width=\linewidth]{../images/p_posxtempo.pdf}
+        \caption{Posição angular em função do tempo}\label{fig:t_x_rad}
+    \end{figure}
 
     \subsubsection{Ordem de convergência}
-    \ldots
+    \begin{figure}[H]
+        \centering
+        \includegraphics[width=0.45\linewidth]{../images/erro_explicito.pdf}
+        \caption{Erro do método Euler Explícito}\label{fig:err_exp}
+    \end{figure}
+
+    \begin{figure}[H]
+        \centering
+        \includegraphics[width=0.45\linewidth]{../images/erro_implicito.pdf}
+        \caption{Erro do método Euler Implícito}\label{fig:err_imp}
+    \end{figure}
+
+    \begin{figure}[H]
+        \centering
+        \includegraphics[width=0.45\linewidth]{../images/erro_RK4.pdf}
+        \caption{Erro do método RK4}\label{fig:err_rk4}
+    \end{figure}
 
     \subsubsection{Velocidade angular pela Posição angular}
-    \ldots
+    \begin{figure}[H]
+        \centering
+        \includegraphics[width=\linewidth]{../images/retrato_fase.pdf}
+        \caption{Velocidade angular em função da posição angular}\label{fig:rad_x_rad/s}
+    \end{figure}
 
     % ---- %
 
@@ -190,8 +217,31 @@ Docente: Fabrício Simeoni de Sousa\\[.2cm]
     \[= \left.\frac{[u_3^2+2u_4^2-2u_3u_4\cos(u_1-u_2)]\sin(u_1-u_2)\cos(u_1-u_2)}{[1+\sin^2(u_1-u_2)]^2}\right|_{(t)}\]
 
     \subsection{Trajetória de um pêndulo}
-    \ldots
+    \begin{figure}[H]
+        \centering
+        \includegraphics[width=0.5\linewidth]{../images/pendulo_duplo.pdf}
+        \caption{Trajetória de um pêndulo, com $q_1(0)=q_2(0)=\dfrac{3\pi}{4}$}\label{fig:tra}
+    \end{figure}
 
     \subsection{Experimentos}
-    \ldots
+    \begin{figure}[H]
+        \centering
+        \includegraphics[width=0.5\linewidth]{../images/pendulo_duploeq.pdf}
+        \caption{Experimento 1, com $q_1(0)=q_2(0)=0.2$}\label{fig:exp1}
+    \end{figure}
+
+    \begin{figure}[H]
+        \centering
+        \begin{subfigure}{0.48\textwidth}
+            \centering
+            \includegraphics[width=\linewidth]{../images/pendulo_duplo1.pdf}
+            \caption{Trajetória, com $q_1(0)=q_2(0)=\dfrac{\pi}{2}$}\label{fig:tra_1}
+        \end{subfigure}\hfill
+        \begin{subfigure}{0.48\textwidth}
+            \centering
+            \includegraphics[width=\linewidth]{../images/pendulo_duplo2.pdf}
+            \caption{Trajetória, com $q_1(0)=\dfrac{\pi}{2}$ e $q_2(0)=\dfrac{\pi}{2}+10^{-2}$}\label{fig:tra_2}
+        \end{subfigure}
+        \caption{Experimento 2}\label{fig:exp2}
+    \end{figure}
 \end{document}

@@ -30,15 +30,16 @@ with open(path.join(results_dir, "erro_RK4"), 'rb') as f:
 #Função que define o plot dos gráficos de posição x tempo. Usado para fazer um grid de plots 2x2
 fig_posxtempo = plt.figure()
 fig_posxtempo.set_size_inches((10,10))
-fig_posxtempo.suptitle("Posição angular em função do tempo")
+#fig_posxtempo.suptitle("Posição angular em função do tempo")
 def plot_pos_angular(result: Resultado, title, pos_subplot, savefig: bool, save_name, color_in):
     ax = fig_posxtempo.add_subplot(pos_subplot)
     ax.plot(result.t, result.u[0,:], '.--', color=color_in)
+    ax.grid()
     ax.set_xlabel("Tempo (s)")
     ax.set_ylabel("Posição angular (rad)")
     ax.set_title(title)
     if savefig:
-        fig_posxtempo.savefig(path.join(images_dir, save_name))
+        fig_posxtempo.savefig(path.join(images_dir, save_name),bbox_inches='tight')
     if show:
         plt.show()
 
@@ -46,15 +47,16 @@ def plot_pos_angular(result: Resultado, title, pos_subplot, savefig: bool, save_
 #Função que define o plot dos gráficos de fase. Usado para fazer um grid de plots 2x2
 fig_fase = plt.figure()
 fig_fase.set_size_inches((10,10))
-fig_fase.suptitle("Retrato de fase")
+#fig_fase.suptitle("Retrato de fase")
 def plot_fase(result: Resultado, title, pos_subplot, savefig: bool, save_name, color_in):
     ax = fig_fase.add_subplot(pos_subplot)
     ax.plot(result.u[0,:], result.u[1,:], color=color_in)
+    ax.grid()
     ax.set_xlabel("Posição angular (rad)")
     ax.set_ylabel("Velocidade angular (rad/s)")
     ax.set_title(title)
     if savefig:
-        fig_fase.savefig(path.join(images_dir, save_name))
+        fig_fase.savefig(path.join(images_dir, save_name),bbox_inches='tight')
     if show:
         plt.show()
 
@@ -63,7 +65,7 @@ def plot_fase(result: Resultado, title, pos_subplot, savefig: bool, save_name, c
 #Gráfico que plota todos os valores no mesmo lugar. Bom para comparações
 #=======================================================================
 fig_comparacao = plt.figure()
-fig_comparacao.suptitle("Comparação dos resultados - Tempo x posição angular")
+#fig_comparacao.suptitle("Comparação dos resultados - Tempo x posição angular")
 ax = fig_comparacao.add_subplot(121)
 
 ax.plot(result_ref.t, result_ref.u[0,:], '.-', label="Solução de referência")
@@ -88,7 +90,7 @@ detalhe.set_ybound(0, 1.5)
 
 fig_comparacao.set_figheight(6)
 fig_comparacao.set_figwidth(11)
-fig_comparacao.savefig(path.join(images_dir, "Comparacao_p_simples.pdf"))
+fig_comparacao.savefig(path.join(images_dir, "Comparacao_p_simples.pdf"),bbox_inches='tight')
 if show:
     plt.show()
 
@@ -101,16 +103,16 @@ plot_pos_angular(result_implicito, "Resultado numérico - Euler implícito", 222
 plot_pos_angular(result_RK4, "Resultado numérico - Runge-Kutta clássico", 223, False, "p_simples_RK4_pos_angxtempo.pdf", 'orange')
 plot_pos_angular(result_ref, "Solução de referência", 224, True,"p_posxtempo.pdf", 'blue')
 
-plot_fase(result_explicito, "Euler explícito,", 221, False, "", 'green')
-plot_fase(result_implicito, "Euler implícito,", 222, False, "", 'red')
-plot_fase(result_RK4, "Runge-Kutta clássico,", 223, False, "",'orange')
-plot_fase(result_ref, "Solução de referência,", 224, True, "retrato_fase.pdf", 'green')
+plot_fase(result_explicito, "Euler explícito", 221, False, "", 'green')
+plot_fase(result_implicito, "Euler implícito", 222, False, "", 'red')
+plot_fase(result_RK4, "Runge-Kutta clássico", 223, False, "",'orange')
+plot_fase(result_ref, "Solução de referência", 224, True, "retrato_fase.pdf", 'green')
 
 
 #=====================
 #plots log-log do erro
 #(norma infinito)
-#(Posicção angular)
+#(Posição angular)
 #=====================
 def plot_loglog(erro, title, savefig: bool, save_name, color_in, ordem_esperada: int):
     h_interval = erro[4,-1] - erro[4,0]
@@ -127,11 +129,11 @@ def plot_loglog(erro, title, savefig: bool, save_name, color_in, ordem_esperada:
     ax.loglog(x,y, color='black', ls='--', label=label_line)
     ax.set_xlabel("h")
     ax.set_ylabel("Erro - norma infinito")
-    ax.set_title(title)
+    #ax.set_title(title)
     ax.grid(visible=True,which='minor')
     ax.legend()
     if savefig:
-        fig.savefig(path.join(images_dir, save_name))
+        fig.savefig(path.join(images_dir, save_name),bbox_inches='tight')
     if show:
         plt.show()
 

@@ -31,6 +31,9 @@ def converter_cartesiano(result: metodos.Resultado):
     y2 = y1 - np.cos(result.u[1, :])
     return x1, x2, y1, y2
 
+#Simulação fora do estado de equilíbrio
+ang_ini1 = 3*np.pi / 4
+ang_ini2 = 3*np.pi / 4
 
 #Experimento da cond inicial próxima
 ang_ini1_1 = np.pi / 2
@@ -47,7 +50,7 @@ ang_ini2_eq = 0.2
 momento_ini1 = 0
 momento_ini2 = 0
 
-
+u0 = np.array([ang_ini1, ang_ini2, momento_ini1, momento_ini2])
 u0_1 = np.array([ang_ini1_1, ang_ini2_1, momento_ini1, momento_ini2])
 u0_2 = np.array([ang_ini1_2, ang_ini2_2, momento_ini1, momento_ini2])
 u0_eq = np.array([ang_ini1_eq, ang_ini2_eq, momento_ini1, momento_ini2])
@@ -66,11 +69,13 @@ f = lambda u, t: np.array([
     A1(u) - A2(u) - np.sin(u[1])
 ])
 
-
+result_RK4 = metodos.RK4(t0, t_final, h, u0, f)
 result_RK4_1 = metodos.RK4(t0, t_final, h, u0_1, f)
 result_RK4_2 = metodos.RK4(t0, t_final, h, u0_2, f)
 result_RK4_eq = metodos.RK4(t0, t_final, h, u0_eq, f)
 
+with open(path.join(results_dir, "duplo"), "wb") as file:
+    pickle.dump(result_RK4, file)
 with open(path.join(results_dir, "duplo_1"), "wb") as file:
     pickle.dump(result_RK4_1, file)
 with open(path.join(results_dir, "duplo_2"), "wb") as file:
