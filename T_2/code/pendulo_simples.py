@@ -7,7 +7,7 @@ from os import path
 
 results_dir = "resultados_numericos"
 refresh_pickles = True
-indice_salvar_pickle = 0
+indice_salvar_pickle = 1
 
 
 #q'' = -sin(q)
@@ -22,9 +22,10 @@ h_values = [0.1, 0.05, 0.01, 0.005, 0.001]
 
 #linhas 0 e 1 de "erros" são os erros de q e p na norma infinito
 #linhas 2 e 3 de "erros" são os erros de q e p nas norma quadratica
-erro_explicito = np.zeros((4,len(h_values)))
-erro_implicito = np.zeros((4,len(h_values)))
-erro_RK4 = np.zeros((4,len(h_values)))
+#linha 4 tem os valor de h correspondente
+erro_explicito = np.zeros((5,len(h_values)))
+erro_implicito = np.zeros((5,len(h_values)))
+erro_RK4 = np.zeros((5,len(h_values)))
 
 pos_ini = np.pi / 4
 vel_ini = 0
@@ -45,13 +46,16 @@ for i, h in enumerate(h_values):
     
     
     erro_explicito[:2,i] = metodos.erro_infinito(result_ref, result_explicito)
-    erro_explicito[2:, i] = metodos.erro_norma2(result_ref, result_explicito)
+    erro_explicito[2:4, i] = metodos.erro_norma2(result_ref, result_explicito)
+    erro_explicito[4, i] = h
 
     erro_implicito[:2,i] = metodos.erro_infinito(result_ref, result_implicito)
-    erro_implicito[2:, i] = metodos.erro_norma2(result_ref, result_implicito)
+    erro_implicito[2:4, i] = metodos.erro_norma2(result_ref, result_implicito)
+    erro_implicito[4, i] = h
 
     erro_RK4[:2,i] = metodos.erro_infinito(result_ref, result_RK4)
-    erro_RK4[2:, i] = metodos.erro_norma2(result_ref, result_RK4)
+    erro_RK4[2:4, i] = metodos.erro_norma2(result_ref, result_RK4)
+    erro_RK4[4, i] = h
 
     if i == indice_salvar_pickle and refresh_pickles:
         with open(path.join(results_dir, "e_explicito"), 'wb') as file:
