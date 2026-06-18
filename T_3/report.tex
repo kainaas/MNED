@@ -1,0 +1,91 @@
+\documentclass[12pt, a4paper]{article}
+
+\usepackage[left=3cm,top=3cm,right=2cm,bottom=2cm]{geometry}
+\usepackage[brazilian]{babel}
+\usepackage{amsfonts, amsmath}
+\usepackage{graphicx, float}
+
+\title{(Universidade de São Paulo)\\
+Trabalho 3:\\Equações Parabólicas e Hiperbólicas}
+
+\author{Métodos Numéricos em Equações Diferenciais\\
+Docente: Fabrício Simeoni de Sousa\\[.2cm]
+\begin{tabular}{r@{\ }c@{\ }l}
+    Kainã Alves Tureso      &-- &15466391\\
+    Vinícius de Sá Ferreira &-- &15491650
+\end{tabular}}
+
+\date{\today}
+
+\renewcommand{\arraystretch}{1.3}
+\newcommand{\bb}[1]{\mathbb{#1}}
+\renewcommand{\bf}[1]{\mathbf{#1}}
+\newcommand{\D}[1]{\Delta#1}
+\renewcommand{\O}[1]{\mathcal{O} (#1)}
+
+\begin{document}
+
+    \maketitle
+
+    \section{Modelagem do Problema}
+    Da EDP
+    \begin{equation}
+        u_t(x,t) + u_x(x,t) = \frac{1}{\bb{P}e} u_{xx}(x,t), \quad (x,t) \in [0,15] \times [0,12]
+    \end{equation}
+    definimos $x_j = j\D{x}$ e $t_n = n\D{t}$, com $j = 0,1,\ldots,N_x$ e $n = 0,1,\ldots,N_t$, então para $U_j^n \approx u(x_j,t_n)$ discretizamos
+
+    \subsection{Progressivas no tempo e centradas no espaço}
+    \begin{equation}
+        \begin{split}
+            &\frac{u(x_j,t_{n+1})-u(x_j,t_n)}{\D{t}} + \O{\D{t}} + \frac{u(x_{j+1},t_n)-u(x_{j-1},t_n)}{2\D{x}} + \O{\D{x}^2}
+            \\&= \frac{1}{\bb{P}e} \frac{u(x_{j+1},t_n)-2u(x_j,t_n)+u(x_{j-1},t_n)}{\D{x}^2} + \O{\D{x}^2}
+        \end{split}
+    \end{equation}
+
+    que produz o método
+    \begin{equation}
+        \frac{U_j^{n+1}-U_j^n}{\D{t}} + \frac{U_{j+1}^n-U_{j-1}^n}{2\D{x}} = \frac{1}{\bb{P}e} \frac{U_{j-1}^n-2U_j^n+U_{j+1}^n}{\D{x}^2}
+    \end{equation}
+
+    ou, equivalentemente
+    \begin{equation}
+        \begin{split}
+            U_j^{n+1} &= \left(\frac{\D{t}}{\bb{P}e\D{x^2}}+\frac{\D{t}}{2\D{x}}\right)U_{j-1}^n + \left(1-\frac{2\D{t}}{\bb{P}e\D{x^2}}\right)U_j^n + \left(\frac{\D{t}}{\bb{P}e\D{x^2}}-\frac{\D{t}}{2\D{x}}\right)U_{j+1}^n\\[.2cm]
+            &= (\alpha+\beta)U_{j-1}^n + (1-2\alpha)U_j^n + (\alpha-\beta)U_{j+1}^n
+        \end{split}
+    \end{equation}
+    onde $\alpha = \dfrac{\D{t}}{\bb{P}e\D{x^2}}$ e $\beta = \dfrac{\D{t}}{2\D{x}}$.
+
+    \newpage
+    
+    Para as condições de contorno periódicas, definimos $U_{N_x+1}^n = U_0^n$, então:
+
+    $j = 0$:
+    \[U_0^{n+1} = (\alpha+\beta)U_{-1}^n + (1-2\alpha)U_0^n + (\alpha-\beta)U_{1}^n = (1-2\alpha)U_0^n + (\alpha-\beta)U_{1}^n + (\alpha+\beta)U_{N_x}^n\]
+
+    $j = N_x$:
+    \[U_{N_x}^{n+1} = (\alpha+\beta)U_{N_x-1}^n + (1-2\alpha)U_{N_x}^n + (\alpha-\beta)U_{N_x+1}^n = (\alpha-\beta)U_{0}^n + (\alpha+\beta)U_{N_x-1}^n + (1-2\alpha)U_{N_x}^n\]
+
+    Portanto, para a forma matricial, teremos
+    \begin{equation}
+        \bf{U^{n+1}} = A\bf{U^n}
+    \end{equation}
+
+    onde $\bf{U^n} = \begin{bmatrix}
+        U_0^n \\ U_1^n \\ U_2^n \\ \vdots \\ U_{N_x}^n
+    \end{bmatrix}$ e $A = \begin{bmatrix}
+        (1-2\alpha) & (\alpha-\beta) & 0 & \cdots & (\alpha+\beta)\\
+        (\alpha+\beta) & (1-2\alpha) & (\alpha-\beta) & \cdots & 0\\
+        0 & (\alpha+\beta) & (1-2\alpha) & \cdots & 0\\
+        \vdots & \vdots & \ddots & \ddots & \ddots\\
+        (\alpha-\beta) & 0 & \cdots & (\alpha+\beta) & (1-2\alpha)\\
+    \end{bmatrix}$
+
+    Da condição inicial $u(x,0) = \exp(-20{(x-2)}^2)+\exp(-{(x-5)}^2)$, obtemos na forma vetorial
+    \[\bf{U_j^0} = \begin{bmatrix}
+        \exp\{-20{(x_0-2)}^2\}+\exp\{-{(x_0-5)}^2\}\\
+        \exp\{-20{_1(x-2)}^2\}+\exp\{-{(x_1-5)}^2\}\\
+        \vdots\\
+        \exp\{-20{(x_{N_x}-2)}^2\}+\exp\{-{(x_{N_x}-5)}^2\}\\
+    \end{bmatrix}\]
+\end{document}
