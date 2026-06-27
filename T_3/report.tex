@@ -2,7 +2,7 @@
 
 \usepackage[left=3cm,top=3cm,right=2cm,bottom=2cm]{geometry}
 \usepackage[brazilian]{babel}
-\usepackage{amsfonts, amsmath}
+\usepackage{amsfonts, amsmath, amssymb}
 \usepackage{graphicx, float}
 
 \title{(Universidade de São Paulo)\\
@@ -27,13 +27,14 @@ Docente: Fabrício Simeoni de Sousa\\[.2cm]
 
     \maketitle
 
-    \section{Modelagem do Problema}
+    \section{EDP}
     Da EDP
     \begin{equation}
         u_t(x,t) + u_x(x,t) = \frac{1}{\bb{P}e} u_{xx}(x,t), \quad (x,t) \in [0,15] \times [0,12]
     \end{equation}
     definimos $x_j = j\D{x}$ e $t_n = n\D{t}$, com $j = 0,1,\ldots,N_x$ e $n = 0,1,\ldots,N_t$, então para $U_j^n \approx u(x_j,t_n)$ discretizamos
 
+    \section{Discretizações}
     \subsection{Progressivas no tempo e centradas no espaço}
     \begin{equation}
         \begin{split}
@@ -70,7 +71,6 @@ Docente: Fabrício Simeoni de Sousa\\[.2cm]
     \begin{equation}
         \bf{U^{n+1}} = A\bf{U^n}
     \end{equation}
-
     onde $\bf{U^n} = \begin{bmatrix}
         U_0^n \\ U_1^n \\ U_2^n \\ \vdots \\ U_{N_x}^n
     \end{bmatrix}$ e $A = \begin{bmatrix}
@@ -88,4 +88,136 @@ Docente: Fabrício Simeoni de Sousa\\[.2cm]
         \vdots\\
         \exp\{-20{(x_{N_x}-2)}^2\}+\exp\{-{(x_{N_x}-5)}^2\}\\
     \end{bmatrix}\]
+
+    \subsubsection{Gráficos}
+    Usando 430 pontos igualmente espaçados em $x$, obtemos $\Delta x = \dfrac{15}{430-1} \approx 3.4965 \cdot 10^{-2}$. Para satisfazer a desigualdade de estritamente menor, utilizamos $\varepsilon = 0.1$ de forma que $\Delta t = (1-\varepsilon) \min\left\{ \dfrac{\Delta x^2}{\frac{2}{\bb{P}e} + \Delta x}, \Delta x \right\}$, logo:
+    \begin{itemize}
+        \item $\bb{P}e = 0.1 \Rightarrow \Delta t \approx 5.4919 \cdot 10^{-5}$
+        \item $\bb{P}e = 1 \Rightarrow \Delta t \approx 5.4070 \cdot 10^{-4}$
+        \item $\bb{P}e = 20 \Rightarrow \Delta t \approx 8.1525 \cdot 10^{-3}$
+    \end{itemize}
+
+    Assim, obtivemos os seguintes resultados:
+
+    \begin{figure}[H]
+        \centering
+        \includegraphics[width=0.85\textwidth]{graphs/initial_condition.pdf}
+        \caption{Condição inicial}\label{fig:initial}
+    \end{figure}
+    
+    \begin{figure}[H]
+        \centering
+        \includegraphics[width=0.85\textwidth]{graphs/surface_Pe=0.1.png}
+        \caption{Solução numérica para $\bb{P}e = 0.1 \ll 1$ (Difusão dominante)}\label{fig:Pe0.1}
+    \end{figure}
+
+    \begin{figure}[H]
+        \centering
+        \includegraphics[width=0.85\textwidth]{graphs/surface_Pe=1.png}
+        \caption{Solução numérica para $\bb{P}e = 1$ (Advecção-Difusão)}\label{fig:Pe1}
+    \end{figure}
+
+    \begin{figure}[H]
+        \centering
+        \includegraphics[width=0.85\textwidth]{graphs/surface_Pe=20.png}
+        \caption{Solução numérica para $\bb{P}e = 20 \gg 1$ (Advecção dominante)}\label{fig:Pe20}
+    \end{figure}
+
+    \subsection{Upwind na derivada espacial}
+    Como o termo que multiplica a primeira derivada espacial é positivo, pelo Upwind utilizamos diferenças regressivas para a derivada espacial, i.e.:
+    \begin{equation}
+        \begin{split}
+            &\frac{u(x_j,t_{n+1})-u(x_j,t_n)}{\D{t}} + \O{\D{t}} + \frac{u(x_{j},t_n)-u(x_{j-1},t_n)}{\D{x}} + \O{\D{x}}
+            \\&= \frac{1}{\bb{P}e} \frac{u(x_{j+1},t_n)-2u(x_j,t_n)+u(x_{j-1},t_n)}{\D{x}^2} + \O{\D{x}^2}
+        \end{split}
+    \end{equation}
+
+    que produz o método
+    \begin{equation}
+        \frac{U_j^{n+1}-U_j^n}{\D{t}} + \frac{U_j^n-U_{j-1}^n}{\D{x}} = \frac{1}{\bb{P}e} \frac{U_{j-1}^n-2U_j^n+U_{j+1}^n}{\D{x}^2}
+    \end{equation}
+
+    ou, equivalentemente
+    \begin{equation}
+        \begin{split}
+            U_j^{n+1} &= \left(\frac{\D{t}}{\bb{P}e\D{x}^2}+\frac{\D{t}}{\D{x}}\right)U_{j-1}^n + \left(1-\frac{2\D{t}}{\bb{P}e\D{x}^2}-\frac{\D{t}}{\D{x}}\right)U_j^n + \left(\frac{\D{t}}{\bb{P}e\D{x}^2}\right)U_{j+1}^n\\[.2cm]
+            &= (\alpha+\beta)U_{j-1}^n + (1-2\alpha-\beta)U_j^n + \alpha U_{j+1}^n
+        \end{split}
+    \end{equation}
+    onde $\alpha = \dfrac{\D{t}}{\bb{P}e\D{x^2}}$ e $\beta = \dfrac{\D{t}}{\D{x}}$.
+
+    \vspace{.3cm}
+
+    Para as condições de contorno periódicas, definimos $U_{N_x+1}^n = U_0^n$, então:
+
+    $j = 0$:
+    \[U_0^{n+1} = (\alpha+\beta)U_{-1}^n + (1-2\alpha-\beta)U_0^n + \alpha U_{1}^n = (1-2\alpha-\beta)U_0^n + \alpha U_{1}^n + (\alpha+\beta)U_{N_x}^n\]
+
+    $j = N_x$:
+    \[U_{N_x}^{n+1} = (\alpha+\beta)U_{N_x-1}^n + (1-2\alpha-\beta)U_{N_x}^n + \alpha U_{N_x+1}^n = \alpha U_{0}^n + (\alpha+\beta)U_{N_x-1}^n + (1-2\alpha-\beta)U_{N_x}^n\]
+
+    Portanto, para a forma matricial, teremos
+    \begin{equation}
+        \bf{U^{n+1}} = A\bf{U^n}
+    \end{equation}
+    onde $\bf{U^n} = \begin{bmatrix}
+        U_0^n \\ U_1^n \\ U_2^n \\ \vdots \\ U_{N_x}^n
+    \end{bmatrix}$ e $A = \begin{bmatrix}
+        (1-2\alpha-\beta) & \alpha & 0 & \cdots & (\alpha+\beta)\\
+        (\alpha+\beta) & (1-2\alpha-\beta) & \alpha & \cdots & 0\\
+        0 & (\alpha+\beta) & (1-2\alpha-\beta) & \cdots & 0\\
+        \vdots & \vdots & \ddots & \ddots & \ddots\\
+        \alpha & 0 & \cdots & (\alpha+\beta) & (1-2\alpha-\beta)\\
+    \end{bmatrix}$
+
+    Da condição inicial $u(x,0) = \exp(-20{(x-2)}^2)+\exp(-{(x-5)}^2)$, obtemos na forma vetorial
+    \[\bf{U_j^0} = \begin{bmatrix}
+        \exp\{-20{(x_0-2)}^2\}+\exp\{-{(x_0-5)}^2\}\\
+        \exp\{-20{_1(x-2)}^2\}+\exp\{-{(x_1-5)}^2\}\\
+        \vdots\\
+        \exp\{-20{(x_{N_x}-2)}^2\}+\exp\{-{(x_{N_x}-5)}^2\}\\
+    \end{bmatrix}\]
+    
+    \newpage
+
+    \subsubsection{Análise de Estabilidade}
+    Pelo critério de Von Neumman, definimos $U_j^n = e^{i\omega_j}$ e $U_j^{n+1} = \zeta U_j^n = \zeta e^{i\omega_j}$. Logo, do método
+    \[U_j^{n+1} = (\alpha+\beta)U_{j-1}^n + (1-2\alpha-\beta)U_j^n + \alpha U_{j+1}^n\]
+    temos
+    \[\zeta e^{i\omega_j} = (\alpha+\beta) e^{i\omega_{j-1}} + (1-2\alpha-\beta)e^{i\omega_j} + \alpha e^{i\omega_{j+1}}\]
+    \[\begin{split}
+        \zeta &= (\alpha+\beta) e^{-i\omega} + (1-2\alpha-\beta) + \alpha e^{i\omega}\\
+        &= 1 + (e^{-i\omega}+e^{i\omega} - 2)\alpha + (e^{-i\omega} - 1)\beta\\
+        &= 1 + (2\cos(\omega) - 2)\alpha + (\cos(\omega)-i\sin(\omega) - 1)\beta\\
+        &= [1+(2\alpha+\beta)(\cos(\omega)-1)] - i \beta\sin(\omega)
+    \end{split}\]
+    e o método será estável se $|\zeta|^2 \leq 1$, logo:
+    \[\begin{split}
+        |\zeta|^2 &= {[1+(2\alpha+\beta)(\cos(\omega)-1)]}^2 + {[\beta\sin(\omega)]}^2\\
+        &= 1 + 2(2\alpha+\beta)(\cos(\omega)-1) + {(2\alpha+\beta)}^2{(\cos(\omega)-1)}^2 + \beta^2\sin^2(\omega)\\
+    \end{split}\]
+    \[= 1 - 4(2\alpha+\beta)\sin^2(\omega/2) + {(2\alpha+\beta)}^2{(-2\sin^2(\omega/2))}^2 + \beta^2\sin^2(\omega)\]
+    \[= 1 - (8\alpha+4\beta)\sin^2(\omega/2) + (16\alpha^2+16\alpha\beta+4\beta^2)\sin^4(\omega/2) + \beta^2\sin^2(\omega)\]
+    \[= 1 - (8\alpha+4\beta)\sin^2(\omega/2) + (16\alpha^2+16\alpha\beta+4\beta^2)\sin^4(\omega/2) + \beta^2(4\sin^2(\omega/2)-4\sin^4(\omega/2))\]
+    \[= 1 - (8\alpha+4\beta-4\beta^2)\sin^2(\omega/2) + (16\alpha^2+16\alpha\beta+4\beta^2-4\beta^2)\sin^4(\omega/2)\]
+    \[\leq 1 - (8\alpha+4\beta-4\beta^2) + (16\alpha^2+16\alpha\beta)\]
+
+    Portanto $|\zeta|^2 \leq 1 \iff - (8\alpha+4\beta-4\beta^2) + (16\alpha^2+16\alpha\beta) \leq 0$, logo
+    \[\begin{split}
+        -8\alpha-4\beta+4\beta^2 + 16\alpha^2+16\alpha\beta &\leq 0\\
+        -2\alpha-\beta+\beta^2 + 4\alpha^2+4\alpha\beta &\leq 0\\
+        -(2\alpha+\beta)+(4\alpha^2+4\alpha\beta+\beta^2) &\leq 0\\
+        -(2\alpha+\beta)+{(2\alpha+\beta)}^2 &\leq 0\\
+        (2\alpha+\beta)(2\alpha+\beta-1) &\leq 0\\
+    \end{split}\]
+
+    Como $\alpha,\beta > 0$, então $2\alpha+\beta > 0$. Portanto
+    \[\begin{split}
+        |\zeta|^2 \leq 1 \iff\quad 2\alpha+\beta-1 &\leq 0\\
+        2\dfrac{\D{t}}{\bb{P}e\D{x^2}} + \dfrac{\D{t}}{\D{x}} &\leq 1\\
+        \D{t}\left(\dfrac{2}{\bb{P}e\D{x^2}} + \dfrac{1}{\D{x}}\right) &\leq 1\\
+        \D{t}\left(\dfrac{2+\bb{P}e\D{x}}{\bb{P}e\D{x^2}}\right) &\leq 1\\
+        \D{t}\left(\dfrac{\frac{2}{\bb{P}e}+\D{x}}{\D{x^2}}\right) &\leq 1\\
+        \therefore \D{t} &\leq \dfrac{\D{x^2}}{\frac{2}{\bb{P}e}+\D{x}}\\
+    \end{split}\]
 \end{document}
