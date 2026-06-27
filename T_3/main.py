@@ -4,14 +4,14 @@ from scipy.sparse import lil_matrix
 
 # Consts
 eps = 0.1
-P = [0.1, 1, 20]
+P = [100, 500, 1000]
 N = 430 # Number of points in x ('till 140 takes less than 3s)
 Dx = 15/(N-1)
 Nx = int(np.floor(15/Dx)) + 1
 
-animate = False
-show = False
-save = True
+animate = True
+show = True
+save = False
 feedback = True
 
 # Cases (I), (II) e (III) for first discretization
@@ -44,7 +44,6 @@ for k,Pe in enumerate(P):
             plt.tight_layout()
             if show: plt.show()
             if save: plt.savefig('graphs/initial_condition.pdf', bbox_inches='tight', format='pdf')
-            exit(0)
 
     # First discretization
     m = Nx
@@ -98,7 +97,7 @@ for k,Pe in enumerate(P):
         plt.tight_layout()
         if show: plt.show()
         # For Pe << 1 and Pe = 1, pdf gets too big, so used png
-        if save: plt.savefig(f'graphs/surface_Pe={Pe}.png', bbox_inches='tight', format='png', dpi=300)
+        if save: plt.savefig(f'graphs/surface_central_Pe={Pe}.png', bbox_inches='tight', format='png', dpi=300)
     if feedback: print(' Done!')
 
     if animate:
