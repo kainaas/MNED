@@ -231,7 +231,8 @@ Docente: Fabrício Simeoni de Sousa\\[.2cm]
 
 
     \section{Impacto do número de Péclet na discretização}
-    Primeiro, notemos que a restrição $\Delta t < \min\left\{ \dfrac{\Delta x^2}{\frac{2}{\bb{P}e} + \Delta x}, \Delta x \right\}$ provém da análise de estabilidade e da Condição de CFL $\frac{|1|\D{t}}{\D{x}} < 1$. Sabendo que $\Pe > 0$, vemos que:
+    \label{sec:peclet}
+    Primeiro, notemos que a restrição $\Delta t < \min\left\{ \dfrac{\Delta x^2}{\frac{2}{\bb{P}e} + \Delta x}, \Delta x \right\}$ provém da análise de estabilidade do método usando Upwind e da Condição de CFL $\frac{|1|\D{t}}{\D{x}} < 1$. Sabendo que $\Pe > 0$, vemos que:
     \begin{align}
         \frac{\Delta x^2}{\frac{2}{\bb{P}e}+ \D{x}} < \frac{\Delta x^2}{\D{x}} = \D{x} \notag
     \end{align}
@@ -469,4 +470,39 @@ Docente: Fabrício Simeoni de Sousa\\[.2cm]
     Conforme o esperado, para valores de $\Pe \ll 1$, a difusividade tem uma escala maior do que a advecão, tendo o efeito de $u$ se tornar constante rapidamente. Para $\Pe = 1$, temos advecção e difusividade em uma mesma proporção.
 
     Para $\Pe \gg 1$, vemos que a advecção domina a difusão. Além disso, a discretização centrada preserva melhor a característica de pouca difusão, enquanto o Upwind introduz uma difusão numérica. Apesar disso, a discretização centrada apresenta algumas oscilações indesejadas anteriores ao pico de maior frequência.
+
+    \section{Análise das restrições}
+    Como visto anteriormente, na seção \ref{sec:peclet}, a condição $\D{t} < \frac{\D{x^2}}{2\Pe^{-1} + \D{x}} = R_1$ é sempre mais restritiva do que $\D{t} < \D{x} = R_2$. A questão principal é que, assintoticamente $R_1$ assume caráteres diferentes. Como visto na seção \ref{sec:peclet}:
+
+    Se $\Pe \to \infty$:
+    \[
+        R_1 \to \D{x}
+    \]
+
+    Se $\Pe \to 0^+$:
+    \[
+        R_1 \to \frac{\Pe \D{x^2}}{2}
+    \]
+
+    Essa relação pode ser vista na figura \ref{fig:loglog}.
+    \begin{figure}[H]
+        \centering
+        \begin{subfigure}{0.45\textwidth}
+            \centering
+            \includegraphics[width=\linewidth]{retricao_Pe=0.001.pdf}
+            \caption{Valor de $R_1$ em função de $\D{x}$ para $\bb{P}e = 0.001$}
+            \label{fig:restricao_pe}
+        \end{subfigure}
+        \hfill
+        \begin{subfigure}{0.45\textwidth}
+            \centering
+            \includegraphics[width=\linewidth]{retricao_Pe=1000000.pdf}
+            \caption{Valor de $R_1$ em função de $\D{x}$ para $\bb{P}e = 1000000$}
+            \label{fig:restricao_PE}
+        \end{subfigure}
+        \caption{}
+        \label{fig:loglog}
+    \end{figure}
+
+    Ou seja, quando $\Pe$ é pequeno, temos uma restrição de ordem quadrática para $\D{t}$ com relação à $\D{x}$. Nesses casos, a restrição passa a ser muito punitiva, tornando interessante optar por métodos implícitos, visto que são incondicionalmente estáveis. Quando $\Pe$ é grande não precisamos deixar a malha temporal tão densa, porém, como visto, podemos ter alguns problemas de instabilidade.
 \end{document}
