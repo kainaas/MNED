@@ -4,15 +4,17 @@ from scipy.sparse import lil_matrix
 
 # Consts
 eps = 0.1
-P = [100, 500, 1000]
+P = [100]
 N = 430 # Number of points in x ('till 140 takes less than 3s)
 Dx = 15/(N-1)
 Nx = int(np.floor(15/Dx)) + 1
 
-animate = True
-show = True
-save = False
+animate = False
+show = False
+save = True
 feedback = True
+central = False #Decides if using central or upwind method for first spatial derivative
+time_plots = True
 
 # Cases (I), (II) e (III) for first discretization
 for k,Pe in enumerate(P):
@@ -51,21 +53,35 @@ for k,Pe in enumerate(P):
 
     a = Dt / (Pe*Dx**2)
     b = Dt / (2*Dx)
+    if central:
+        # Inner lines
+        for j in range(1, m-1):
+            A[j, j-1] = a+b
+            A[j, j] = 1-2*a
+            A[j, j+1] = a-b
 
-    # Inner lines
-    for j in range(1, m-1):
-        A[j, j-1] = a+b
-        A[j, j] = 1-2*a
-        A[j, j+1] = a-b
+        # Periodic boundary conditions
+        A[0, 0] = 1-2*a
+        A[0, 1] = a-b
+        A[0, m-1] = a+b
 
-    # Periodic boundary conditions
-    A[0, 0] = 1-2*a
-    A[0, 1] = a-b
-    A[0, m-1] = a+b
+        A[m-1, 0] = a-b
+        A[m-1, m-2] = a+b
+        A[m-1, m-1] = 1-2*a
+    else:
+        # Inner lines
+        for j in range(1, m-1):
+            A[j, j-1] = a+2*b
+            A[j, j] = 1 - 2*a - 2*b
+            A[j, j+1] = a
+        # Periodic boundary conditions
+        A[0, 0] = 1 - 2*a - 2*b
+        A[0, 1] = a
+        A[0, m-1] = a+2*b
 
-    A[m-1, 0] = a-b
-    A[m-1, m-2] = a+b
-    A[m-1, m-1] = 1-2*a
+        A[m-1, 0] = a
+        A[m-1, m-2] = a+2*b
+        A[m-1, m-1] = 1 - 2*a - 2*b
 
     A = A.tocsr()
 
@@ -97,8 +113,32 @@ for k,Pe in enumerate(P):
         plt.tight_layout()
         if show: plt.show()
         # For Pe << 1 and Pe = 1, pdf gets too big, so used png
-        if save: plt.savefig(f'graphs/surface_central_Pe={Pe}.png', bbox_inches='tight', format='png', dpi=300)
+        if save: 
+            if central:
+                plt.savefig(f'graphs/surface_central_Pe={Pe}.png', bbox_inches='tight', format='png', dpi=300)
+            else:
+                plt.savefig(f'graphs/surface_upwind_Pe={Pe}.png', bbox_inches='tight', format='png', dpi=300)
     if feedback: print(' Done!')
+
+    if time_plots:
+        fig = plt.figure(figsize=(10,5))
+        evol = fig.add_subplot(111)
+
+        times = np.array([0, 1.5, 3, 4.5, 6, 7.5])
+        times_n = np.floor(times/Dt).astype(int)
+        evol.set_xlabel("x")
+        evol.set_ylabel("u")
+        for i, k in enumerate(times_n):
+            evol.plot(X[k,:],U[k,:], label=f't = {times[i]}')
+        evol.legend()
+        plt.tight_layout()
+        if show:
+            plt.show()
+        if save:
+            if central:
+                plt.savefig(f'graphs/evol_central_Pe={Pe}.png', bbox_inches='tight', format='png', dpi=300)
+            else:
+                plt.savefig(f'graphs/evol_upwind_Pe={Pe}.png', bbox_inches='tight', format='png', dpi=300)
 
     if animate:
         plt.close('all')

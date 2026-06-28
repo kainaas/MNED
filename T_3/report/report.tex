@@ -3,7 +3,7 @@
 \usepackage[left=3cm,top=3cm,right=2cm,bottom=2cm]{geometry}
 \usepackage[brazilian]{babel}
 \usepackage{amsfonts, amsmath, amssymb}
-\usepackage{graphicx, float}
+\usepackage{graphicx, float, caption, subcaption}
 
 \title{(Universidade de São Paulo)\\
 Trabalho 3:\\Equações Parabólicas e Hiperbólicas}
@@ -179,7 +179,7 @@ Docente: Fabrício Simeoni de Sousa\\[.2cm]
     Da condição inicial $u(x,0) = \exp(-20{(x-2)}^2)+\exp(-{(x-5)}^2)$, obtemos na forma vetorial
     \[\bf{U_j^0} = \begin{bmatrix}
         \exp\{-20{(x_0-2)}^2\}+\exp\{-{(x_0-5)}^2\}\\
-        \exp\{-20{_1(x-2)}^2\}+\exp\{-{(x_1-5)}^2\}\\
+        \exp\{-20{(x_1-2)}^2\}+\exp\{-{(x_1-5)}^2\}\\
         \vdots\\
         \exp\{-20{(x_{N_x}-2)}^2\}+\exp\{-{(x_{N_x}-5)}^2\}\\
     \end{bmatrix}\]
@@ -187,6 +187,7 @@ Docente: Fabrício Simeoni de Sousa\\[.2cm]
     \newpage
 
     \subsubsection{Análise de Estabilidade}
+    \label{sec:est}
     Pelo critério de Von Neumman, definimos $U_j^n = e^{i\omega_j}$ e $U_j^{n+1} = \zeta U_j^n = \zeta e^{i\omega_j}$. Logo, do método
     \[U_j^{n+1} = (\alpha+\gamma)U_{j-1}^n + (1-2\alpha-\gamma)U_j^n + \alpha U_{j+1}^n\]
     temos
@@ -267,6 +268,82 @@ Docente: Fabrício Simeoni de Sousa\\[.2cm]
     \]
     Que é consistente com a equação $u_t(x,t) = \frac{1}{\Pe} u_{xx}(x,t)$ e condicionalmente estável.
 
+    \subsubsection{Instabilidade para número de Péclet grande}
+    \label{sec:inst}
+    Calculemos a região de estabilidade do método centrado. Utilizando a mesma notação da seção \ref{sec:est}, obtemos:
+    \begin{equation}
+        \begin{split}
+            \zeta e^{i \omega j} &= (\alpha + \beta) e^{i\omega(j-1)} + (1-2\alpha)e^{i \omega j} + (\alpha - \beta)e^{i\omega(j+1)} \\
+            \zeta &= 1 + 2\alpha(\cos(\omega) - 1) - 2i\beta\sin(\omega) \\
+                  &= 1 - 4\alpha\sin^2\left(\frac{\omega}{2}\right) - 2i\beta\sin(\omega)
+        \end{split}
+    \end{equation}
+
+    Definindo $s = \sin^2\left( \frac{\omega}{2} \right)$, $0 \le s \le 1$ e notando que $\sin^2(\omega) = 4s(1-s)$:
+    \begin{equation}
+        \begin{split}
+            |\zeta|^2 = 1-8\alpha s + 16\alpha^2 s^2 + 16\beta^2 s(1-s)
+        \end{split}
+    \end{equation}
+
+    Devemos ter $|\zeta| \le 1$, logo:
+    \begin{equation}
+        \begin{split}
+            -8\alpha s + 16\alpha^2 s^2 + 16\beta^2 s(1-s) \le 0 \\
+            2s^2 (\alpha^2 - \beta^2) + s(2\beta^2 - \alpha) \le 0
+        \end{split}
+    \end{equation}
+    Ou seja, a expressão acima tem que ser não-positiva $\forall s \in [0,1]$. Se $s=0$, isso já ocorre. Logo podemos desconsiderar esse caso e dividir tudo por $s$. Logo, obtemos uma reta em função de $s$ e basta que valha a seguinte desigualdade em $s=1$ e $s=0^+$:
+    \[
+        2s (\alpha^2 - \beta^2) + (2\beta^2 - \alpha) \le 0
+    \]
+    Para $s=0^+$, devemos ter $2\beta^2 \le \alpha$. Para $s=1$, a desigualdade pode ser reduzida para $\alpha \le \frac{1}{2}$. Escrevendo tudo em função de $]D{t}$, $\D{x}$ e $\Pe$, obtemos:
+    \begin{equation}
+        \D{t} < \min\left\{\frac{\Pe\D{x^2}}{2}, \frac{2}{\Pe} \right\}
+    \end{equation}
+
+    Note que se $\D{t}$ satisfaz a restrição inicial:
+    \[
+        \Delta t < \frac{\Delta x^2}{\frac{2}{Pe} + \Delta x} = \frac{\Pe \D{x^2}}{2 + \Pe \D{x}} < \frac{\Pe \D{x^2}}{2}
+    \]
+
+    E se $\D{x} \le \frac{2}{\Pe}$ então
+    \[
+        \D{t} < \frac{\Pe \D{x^2}}{\Pe \D{x}} = \D{x} \le \frac{2}{\Pe}
+    \]
+    Logo, se fixarmos a malha espacial, o método se tornará instável conforme o número de Péclet cresce. Além disso, a região de estabilidade fica cada vez menor, nesse caso, o que aumenta as chances de o fator de ampliação cair próximo as bordas dessa região. Isso tudo é evidenciado nos gráficos a seguir em que para $\Pe$ grande a solução estoura com um ruído da ordem de $10^{32}$.
+    \begin{figure}[H]
+        \centering
+
+        \begin{subfigure}{0.45\textwidth}
+            \centering
+            \includegraphics[width=\linewidth]{surface_central_Pe=100.png}
+            \caption{Solução numérica para $\bb{P}e = 100$}
+            \label{fig:Pe100}
+        \end{subfigure}
+        \hfill
+        \begin{subfigure}{0.45\textwidth}
+            \centering
+            \includegraphics[width=\linewidth]{surface_central_Pe=500.png}
+            \caption{Solução numérica para $\bb{P}e = 500$}
+            \label{fig:Pe500}
+        \end{subfigure}
+
+        \vspace{0.5cm}
+
+        \begin{subfigure}{0.45\textwidth}
+            \centering
+            \includegraphics[width=\linewidth]{surface_central_Pe=1000.png}
+            \caption{Solução numérica para $\bb{P}e = 1000$}
+            \label{fig:Pe1000}
+        \end{subfigure}
+
+        \caption{Instabilidade numérica do método central ao aumentar $\Pe$}
+        \label{fig:instabilidade}
+    \end{figure}
+
+
+
     \subsection{Upwind na derivada espacial}
     Lembrando que $\gamma = 2\beta$, para $\Pe \gg 1$:
     \[
@@ -282,8 +359,114 @@ Docente: Fabrício Simeoni de Sousa\\[.2cm]
 
     Obtemos o mesmo resultado que o caso $\Pe \ll 1$ para a discretização centrada.
 
+    Observe que, utilizando Upwind para a primeira derivada espacial, o método não apresenta nenhum problema de estabilidade conforme $\Pe$ cresce. Isso pode ser evidenciado pelo fato de recuperarmos o próprio método Upwind quando $\Pe \to \infty$ e pelos gráficos a seguir.
+    \begin{figure}[H]
+        \centering
 
-    \subsection{Instabilidade para número de Péclet grande}
-    \label{sec:inst}
+        \begin{subfigure}{0.45\textwidth}
+            \centering
+            \includegraphics[width=\linewidth]{surface_upwind_Pe=100.png}
+            \caption{Solução numérica com upwind para $\bb{P}e = 100$}
+            \label{fig:Pe100up}
+        \end{subfigure}
+        \hfill
+        \begin{subfigure}{0.45\textwidth}
+            \centering
+            \includegraphics[width=\linewidth]{surface_upwind_Pe=500.png}
+            \caption{Solução numérica com upwind para $\bb{P}e = 500$}
+            \label{fig:Pe500up}
+        \end{subfigure}
 
+        \vspace{0.5cm}
+
+        \begin{subfigure}{0.45\textwidth}
+            \centering
+            \includegraphics[width=\linewidth]{surface_upwind_Pe=1000.png}
+            \caption{Solução numérica com upwind para $\bb{P}e = 1000$}
+            \label{fig:Pe1000up}
+        \end{subfigure}
+
+        \caption{Soluções numéricas usando o método upwind ao aumentar $\Pe$}
+        \label{fig:upwind}
+    \end{figure}
+
+    \subsection{Gráficos em tempos distintos}
+    Uma forma de visualizar a difusão e a advecção ocorrendo é plotar $u$ em função de $x$ em tempos distintos. As figuras a seguir mostram esses gráficos:
+    \begin{figure}[H]
+        \centering
+
+        \begin{subfigure}{0.45\textwidth}
+            \centering
+            \includegraphics[width=\linewidth]{evol_upwind_Pe=0.1.png}
+            \caption{Evolução da solução no tempo com upwind para $\bb{P}e = 0.1$}
+            \label{fig:Pe01timeup}
+        \end{subfigure}
+        \hfill
+        \begin{subfigure}{0.45\textwidth}
+            \centering
+            \includegraphics[width=\linewidth]{evol_upwind_Pe=1.png}
+            \caption{Evolução da solução no tempo com upwind para $\bb{P}e = 1$}
+            \label{fig:Pe1timeup}
+        \end{subfigure}
+
+        \vspace{0.5cm}
+
+        \begin{subfigure}{0.45\textwidth}
+            \centering
+            \includegraphics[width=\linewidth]{evol_upwind_Pe=20.png}
+            \caption{Evolução da solução no tempo com upwind para $\bb{P}e = 20$}
+            \label{fig:Pe20timeup}
+        \end{subfigure}
+        \hfill
+        \begin{subfigure}{0.45\textwidth}
+            \centering
+            \includegraphics[width=\linewidth]{evol_upwind_Pe=100.png}
+            \caption{Evolução da solução no tempo com upwind para $\bb{P}e = 100$}
+            \label{fig:Pe100timeup}
+        \end{subfigure}
+
+        \caption{Efeito dos diferentes valores de $\Pe$ na solução usando Upwind para derivada primeira no espaço}
+        \label{fig:timeupwind}
+    \end{figure}
+    
+    \begin{figure}[H]
+        \centering
+
+        \begin{subfigure}{0.45\textwidth}
+            \centering
+            \includegraphics[width=\linewidth]{evol_central_Pe=0.1.png}
+            \caption{Evolução da solução no tempo com discretização centrada para $\bb{P}e = 0.1$}
+            \label{fig:Pe01timecentral}
+        \end{subfigure}
+        \hfill
+        \begin{subfigure}{0.45\textwidth}
+            \centering
+            \includegraphics[width=\linewidth]{evol_central_Pe=1.png}
+            \caption{Evolução da solução no tempo com discretização centrada para $\bb{P}e = 1$}
+            \label{fig:Pe1timecentral}
+        \end{subfigure}
+
+        \vspace{0.5cm}
+
+        \begin{subfigure}{0.45\textwidth}
+            \centering
+            \includegraphics[width=\linewidth]{evol_central_Pe=20.png}
+            \caption{Evolução da solução no tempo com discretização centrada para $\bb{P}e = 20$}
+            \label{fig:Pe20timecentral}
+        \end{subfigure}
+        \hfill
+        \begin{subfigure}{0.45\textwidth}
+            \centering
+            \includegraphics[width=\linewidth]{evol_central_Pe=100.png}
+            \caption{Evolução da solução no tempo com discretização centrada para $\bb{P}e = 100$}
+            \label{fig:Pe100timecentral}
+        \end{subfigure}
+
+        \caption{Efeito dos diferentes valores de $\Pe$ na solução usando diferenças finitas centrais para derivada primeira no espaço}
+        \label{fig:timecentral}
+    \end{figure}
+
+    Conforme o esperado, para valores de $\Pe \ll 1$, a difusividade tem uma escala maior do que a advecão, tendo o efeito de $u$ se tornar constante rapidamente. Para $\Pe = 1$, temos advecção e difusividade em uma mesma proporção.
+
+    Para $\Pe \gg 1$, vemos que a advecção domina a difusão. Além disso, a discretização centrada preserva melhor a característica de pouca difusão, enquanto o Upwind introduz uma difusão numérica. Apesar disso, a discretização centrada apresenta algumas oscilações indesejadas anteriores ao pico de maior frequência.
 \end{document}
